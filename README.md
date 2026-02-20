@@ -75,27 +75,11 @@ python -m pip install -r requirements.txt
 ### Apply migrations
 
 ```
-python src/manage.py makemigrations
+python manage.py makemigrations
 ```
 
 ```
-python src/manage.py migrate
-```
-
----
-
-## Load data from fixtures to recreate the DB (the order of loading matters)
-```
-python src/manage.py loaddata src/accounts/fixtures/users.json
-```
-```
-python src/manage.py loaddata src/accounts/fixtures/accounts.json
-```
-```
-python src/manage.py loaddata src/plasmids/fixtures/public_collections.json
-```
-```
-python src/manage.py loaddata src/browse/fixtures/browse_data.json
+python manage.py migrate
 ```
 
 ---
@@ -103,7 +87,7 @@ python src/manage.py loaddata src/browse/fixtures/browse_data.json
 ## Run the development server
 
 ```
-python src/manage.py runserver
+python manage.py runserver
 ```
 
 Open your browser at:
