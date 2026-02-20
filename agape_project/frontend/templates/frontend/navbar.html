@@ -24,51 +24,41 @@
 
         <!-- Home -->
         <li class="nav-item">
-          <a
-            class="nav-link {% if active_page == 'home' %}active{% endif %}"
-            href="/"
-          >
-            Home
+          <a class="nav-link {% if active_page == 'home' %}active{% endif %}"
+            href="{% url 'frontend:home' %}">
+              Home
           </a>
         </li>
 
         <!-- New simulation -->
         <li class="nav-item">
-          <a
-            class="nav-link {% if active_page == 'simulator' %}active{% endif %}"
-            href="/simulator/"
-          >
-            New simulation
+          <a class="nav-link {% if active_page == 'simulator' %}active{% endif %}"
+            href="{% url 'simulator:simulation' %}">
+              New simulation
           </a>
         </li>
 
         <!-- Results -->
         <li class="nav-item">
-          <a
-            class="nav-link {% if active_page == 'results' %}active{% endif %}"
-            href="/simulator/results/"
-          >
-            Results
+          <a class="nav-link {% if active_page == 'results' %}active{% endif %}"
+            href="{% url 'simulator:results' %}">
+              Results
           </a>
         </li>
 
         <!-- Contact Us -->
         <li class="nav-item">
-          <a
-            class="nav-link {% if active_page == 'contact_us' %}active{% endif %}"
-            href="/simulator/contact_us/"
-          >
-            Contact Us
+          <a class="nav-link {% if active_page == 'contact_us' %}active{% endif %}"
+            href="{% url 'simulator:contact' %}">
+              Contact Us
           </a>
         </li>
 
         <!-- FAQ -->
         <li class="nav-item">
-          <a
-            class="nav-link {% if active_page == 'FAQ' %}active{% endif %}"
-            href="/simulator/FAQ/"
-          >
-            FAQ
+          <a class="nav-link {% if active_page == 'FAQ' %}active{% endif %}"
+            href="{% url 'simulator:faq' %}">
+              FAQ
           </a>
         </li>
 

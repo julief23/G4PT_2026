@@ -21,7 +21,7 @@
 
 
 
-    <form id="simulation-form" method="post" enctype="multipart/form-data" action="{% url 'run_simulation' %}">
+    <form id="simulation-form" method="post" enctype="multipart/form-data" action="{% url 'simulator:simulation' %}">
       {% csrf_token %}
 
 
@@ -120,7 +120,7 @@
                 <div class="position-relative w-100" style="height: 200px;">
                   <!-- Blurred JSME iframe -->
                   <div style="pointer-events: none; filter: blur(1.8px); opacity: 0.6;">
-                    <iframe src="{% url 'jsme' %}" 
+                    <iframe src="{% static 'frontend/jsme/index.html' %}"
                             width="100%" 
                             height="200" 
                             style="border: none; border-radius: 6px;" 
