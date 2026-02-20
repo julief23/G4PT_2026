@@ -1,0 +1,229 @@
+{% extends "frontend/base.html" %}
+{% block title %}AGAPE - Home{% endblock %}
+
+{% block content %}
+ 
+<section class="section sec3 simulation py-5" id="simulation">
+  <div class="container">
+    <h2 class="text-left mb-4">Simulation</h2>
+
+      {% if messages %}
+        <div class="custom-messages">
+          {% for message in messages %}
+            <div class="custom-message {{ message.tags }}">
+              <span class="close-btn">&times;</span>
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+
+
+    <form id="simulation-form" method="post" enctype="multipart/form-data" action="{% url 'run_simulation' %}">
+      {% csrf_token %}
+
+
+      <div class="alert alert-warning mt-2 ms-0 py-2 px-2" role="alert">
+        ⚠️ Classical descriptors should be computed using AlvaDesc (licensed software), and quantum chemical descriptors should be generated with Jaguar (Schrödinger LLC). Please ensure that your input data follows the format presented below.
+      </div>
+
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="mb-0" style="color: var(--secondary-color);">Job Name</h5>
+        </div>
+        <div class="card-body">
+          <input type="text"
+                class="form-control"
+                id="jobName"
+                name="job_name"
+                required 
+                maxlength="100" 
+                placeholder="e.g., Binder-G4 complex"
+                translate="no"
+                style="max-width: 450px;">
+        </div>
+      </div>
+
+
+
+      <!-- Model Selection -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Model Selection</h5>
+          <button class="btn btn-outline-primary toggle-btn" type="button"
+            data-bs-toggle="collapse" data-bs-target="#modelSelectionCollapse"
+            aria-expanded="true" aria-controls="modelSelectionCollapse">
+            <span class="toggle-icon">▲</span>
+          </button>
+        </div>
+
+
+        <div id="modelSelectionCollapse" class="collapse show">
+          <div class="card-body">
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="radio" name="modelType" id="reducedModelRadio" value="reduced" checked>
+              <label class="form-check-label" for="reducedModelRadio" style="color: var(--text-color);">
+                <strong>Lightweight Model</strong> — 180 selected features (faster, simpler)
+              </label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="radio" name="modelType" id="generalModelRadio" value="general">
+              <label class="form-check-label" for="generalModelRadio" style="color: var(--text-color);">
+                <strong>Comprehensive Model</strong> — Full set of 489 descriptors
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Classical Descriptors -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Classical Descriptors</h5>
+          <button class="btn btn-outline-primary toggle-btn" type="button"
+            data-bs-toggle="collapse" data-bs-target="#csvUploadCollapse"
+            aria-expanded="true" aria-controls="csvUploadCollapse">
+            <span class="toggle-icon">▲</span>
+          </button>
+        </div>
+
+        <div id="csvUploadCollapse" class="collapse show">
+          <div class="card-body">
+            <!-- AGAPE v1.0 -->
+            <div class="mb-5">
+              <h6 class="fw-bold" style="color: var(--primary-color);">AGAPE Version 1.0</h6>
+              <p style="color: var(--text-color);">Upload classical descriptors and run predictions</p>
+
+              <div class="agape_csv d-flex align-items-center mb-2">
+                <img src="{% static 'frontend/images/csv_logo.png' %}" style="height: 20px; margin-right: 8px;" alt="CSV Icon" />
+                <a target="_blank" href="{% static 'frontend/Documents/Descriptors_for_ML_Template.csv' %}">
+                  <u><strong style="color: var(--text-color);">CSV Template for Classical Descriptors</strong></u>
+                </a>
+              </div>
+
+              <label for="customFileUploadLigand" translate="no" style="color: var(--primary-color);">Upload G4-Binders Descriptors CSV</label>
+              <input type="file" class="form-control" id="customFileUploadLigand" name="classicalCsv" required accept=".csv" style="max-width: 450px;" />
+            </div>
+
+            <!-- AGAPE v2.0 -->
+            <div class="mt-4">
+              <h6 class="fw-bold" style="color: var(--primary-color);">AGAPE Version 2.0 <span class="text-danger">(Preview - Coming Soon)</span></h6>
+              <p style="color: var(--primary-color);">Interactive molecule editor and SMILES input</p>
+              <p style="color: var(--primary-color);">Automated Calculation of Classical Descriptors</p>
+
+              <div class="d-flex flex-column align-items-start" style="max-width: 450px;">
+                <!-- SMILES input aligned left -->
+                <input type="text" class="form-control mb-3" translate="no"  placeholder="Binders SMILES" disabled style="width: 100%;" />
+                <!-- JSME + lock block -->
+                <div class="position-relative w-100" style="height: 200px;">
+                  <!-- Blurred JSME iframe -->
+                  <div style="pointer-events: none; filter: blur(1.8px); opacity: 0.6;">
+                    <iframe src="{% url 'jsme' %}" 
+                            width="100%" 
+                            height="200" 
+                            style="border: none; border-radius: 6px;" 
+                            title="JSME Editor (Disabled)">
+                    </iframe>
+                  </div>
+                  <!-- Lock centered over JSME -->
+                  <div class="position-absolute top-50 start-50 translate-middle text-center">
+                    <i class="fas fa-lock mb-1"></i>
+                    <div class="coming-soon-box">Coming soon in AGAPE v2.0</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End Classical card -->
+
+      <!-- Quantum Descriptors -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Quantum Chemical Descriptors</h5>
+          <button class="btn btn-outline-primary toggle-btn" type="button"
+            data-bs-toggle="collapse" data-bs-target="#quantumCollapse"
+            aria-expanded="true" aria-controls="quantumCollapse">
+            <span class="toggle-icon">▲</span>
+          </button>
+        </div>
+
+        <div id="quantumCollapse" class="collapse show">
+          <div class="card-body">
+            <h6 class="mt-3 mb-1 ms-3" style="color: var(--text-color);">
+              <input type="radio" id="radioQuantumCsv" name="quantumInputType" class="form-check-input me-2" value="csv" checked />
+              <strong>Upload Quantum Descriptors CSV File</strong>
+            </h6>
+
+            <div class="row px-3">
+              <div class="col-md-6">
+                <div class="agape_csv mb-2 d-flex align-items-center">
+                  <img src="{% static 'frontend/images/csv_logo.png' %}" style="height: 20px; margin-right: 8px;" alt="CSV Icon" />
+                  <a target="_blank" href="{% static 'frontend/Documents/Quantum_Chemical_Desc.csv' %}">
+                    <u><strong style="color: var(--text-color);">CSV Template for Quantum Descriptors</strong></u>
+                  </a>
+                </div>
+                <div class="mb-3">
+                  <input type="file" class="form-control" id="quantumCsvInput" name="quantumCsv" accept=".csv" />
+                </div>
+              </div>
+            </div>
+
+            <h6 class="text-left mt-4 mb-1 ms-3" style="color: var(--text-color);">
+              <input type="radio" id="radioQuantumManual" name="quantumInputType" class="form-check-input me-2" value="manual" />
+              <strong>Manual Quantum Descriptor Input</strong>
+            </h6>
+
+            <div class="alert alert-warning mt-2 ms-3 py-2 px-2" role="alert">
+              ⚠️ Manual quantum descriptor input is only supported for one molecule. Make sure your Classical Descriptors CSV file is only for one molecule.
+            </div>
+
+            <div id="quantum-form" class="px-3" style="margin-top: 0.2rem;">
+              <div class="row">
+                <!-- i_m_Spin_multiplicity -->
+                <div class="col-md-6 mb-3">
+                  <label style="color: var(--text-color);">Spin multiplicity</label>
+                  <input type="text" class="form-control quantum-input" name="spin_multiplicity" />
+                </div>
+
+                <!-- r_j_ALIE_neg_mean,_kcal/mol -->
+                <div class="col-md-6 mb-3">
+                  <label style="color: var(--text-color);">ALIE negative mean (kcal/mol)</label>
+                  <input type="text" class="form-control quantum-input" name="alie_neg_mean" />
+                </div>
+
+                <!-- i_epik_Tot_Q -->
+                <div class="col-md-6 mb-3">
+                  <label style="color: var(--text-color);">epik Total charge Q</label>
+                  <input type="text" class="form-control quantum-input" name="epik_tot_q" />
+                </div>
+
+                <!-- i_f3d_flags -->
+                <div class="col-md-6 mb-3">
+                  <label style="color: var(--text-color);">f3d Flags</label>
+                  <input type="text" class="form-control quantum-input" name="f3d_flags" />
+                </div>
+
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div> <!-- End Quantum card -->
+
+      <!-- Launch Button -->
+      <div class="mt-4 mb-2 text-center">
+        <button class="btn btn-primary run-button" type="submit">
+          Launch AGAPE
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+
+</section>
+
+{% endblock %}

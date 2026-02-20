@@ -1,0 +1,82 @@
+{% extends "frontend/base.html" %}
+{% block title %}AGAPE - Home{% endblock %}
+
+{% block content %}
+ 
+
+<section class="section sec4 results py-5" id="results">
+  <div class="container">
+
+    {% if messages %}
+      <div class="custom-messages">
+        {% for message in messages %}
+          <div class="custom-message {{ message.tags }}">
+            <span class="close-btn">&times;</span>
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  
+    <h2 class="text-left mb-1">Summary</h2>
+
+      {% if results.job_name %}
+        <a href="{% url 'download_prediction_csv' results.job_name %}" class="btn btn-success">
+          Download Predictions CSV
+        </a>
+      {% endif %}
+      <br>
+
+    <div class="results-table-container">
+    
+
+      {% if results %}
+      <div class="mb-4 p-3" style="border: 1px solid var(--primary-color); border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); background-color: var(--section-bg-color);">
+        <p><strong>Model Used:</strong> {{ results.model|default:"—" }}</p>
+        <p><strong>Descriptors:</strong> {{ results.descriptors|default:"—" }}</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 class="text-left mb-4">Prediction Results</h2>
+    <div class="results-table-container">
+      {% if results.prediction_table %}
+        <table class="results-table table table-bordered text-center">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Classification</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in results.prediction_table %}
+            <tr>
+              <td>{{ row.index }}</td>
+              <td>
+                {% if row.classification == "ACTIVE" %}
+                  <span class="green-text">{{ row.classification }}</span>
+                {% elif row.classification == "INACTIVE" %}
+                  <span class="red-text">{{ row.classification }}</span>
+                {% else %}
+                  {{ row.classification|default:"—" }}
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p>No results available.</p>
+      {% endif %}
+
+    </div>
+
+  </div>
+
+
+</section>
+
+{% endblock %}

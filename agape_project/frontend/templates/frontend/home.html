@@ -1,0 +1,67 @@
+{% extends "frontend/base.html" %}
+{% block title %}AGAPE - Home{% endblock %}
+
+{% block content %}
+ 
+ <!-- About Section -->
+      <section class="section sec2 about active py-5" id="about">
+        <div class="container">
+          <h2 class="text-start mb-4">About the AGAPE Model</h2>
+          <div class="row justify-content-center">
+            <div class="col-10 col-md-8 text-center">
+              <img
+                src="{% static 'frontend/images/agape_python.png' %}"
+                alt="AGAPE Model Diagram"
+                class="img-fluid agape-img mb-4"
+              />
+            </div>
+          </div>
+          <div class="row justify-content-center">
+          
+            <div class="col-11 col-md-10 abstract-text">
+          
+            <h3>What is AGAPE?</h3>
+          <div class="lang-en">
+            <p>
+              AGAPE (computAtional G-quadruplex Affinity PrEdiction) is a novel <span translate="no" class="notranslate">machine learning (ML)</span>-based model designed to predict the binding and stabilizing potential of small molecules targeting <span translate="no" class="notranslate">G-quadruplexes (G4s)</span>. G4s, prevalent in telomeres and oncogene promoters, are promising therapeutic targets, but designing selective <span translate="no" class="notranslate">binders</span> remains challenging.
+            </p>
+          </div>
+
+          <div class="lang-fr" style="display: none;">
+            <p>
+              AGAPE (computAtional G-quadruplex Affinity PrEdiction) est un modèle innovant basé sur le <span translate="no" class="notranslate"> machine learning (ML)</span>, conçu pour prédire le potentiel de liaison et de stabilisation de petites molécules ciblant les <span translate="no" class="notranslate"> G-quadruplexes (G4s)</span>. Les <span translate="no" class="notranslate"> G4s</span>, présents dans les télomères et les promoteurs d’oncogènes, constituent des cibles thérapeutiques prometteuses, mais la conception de <span translate="no" class="notranslate">binders</span> sélectifs reste difficile.
+            </p>
+          </div>
+
+          <div class="lang-it" style="display: none;">
+            <p>
+              AGAPE (computAtional G-quadruplex Affinity PrEdiction) è un nuovo modello basato su <span translate="no" class="notranslate"> machine learning (ML) </span> progettato per prevedere il potenziale di legame e stabilizzazione di piccole molecole rivolte ai <span translate="no" class="notranslate"> G-quadruplexes (G4s)</span>. I <span translate="no" class="notranslate"> G4s</span>, presenti nei telomeri e nei promotori degli oncogeni, rappresentano obiettivi terapeutici promettenti, ma la progettazione di <span translate="no" class="notranslate">binders</span> selettivi rimane complessa.
+            </p>
+          </div>
+
+          <div class="lang-es" style="display: none;">
+            <p>
+              AGAPE (computAtional G-quadruplex Affinity PrEdiction) es un novedoso modelo basado en <span translate="no" class="notranslate"> machine learning (ML) </span> diseñado para predecir el potencial de unión y estabilización de pequeñas moléculas dirigidas a <span translate="no" class="notranslate"> G-quadruplexes (G4s)</span>. Los <span translate="no" class="notranslate"> G4s</span>, presentes en los telómeros y promotores de oncogenes, representan objetivos terapéuticos prometedores, aunque el diseño de <span translate="no" class="notranslate">binders</span> selectivos sigue siendo un desafío.
+            </p>
+          </div>
+
+            <p>
+              Built upon a curated dataset of 1217 compounds annotated through Förster Resonance Energy Transfer (FRET) melting assays, AGAPE integrates 5666 molecular descriptors, both classical and 
+              quantum chemical, to capture features relevant to G4 recognition, driving researchers to predict the potential G4-stabilization of small molecules, including both organic ligands and 
+              metal complexes.
+            </p>
+            <p>
+              Among the trained ML models, XGBoost achieved the best performance with an accuracy of nearly 90%. SHAP analysis highlighted descriptors related to molecular topology, polarizability, and electrostatic potential as key contributors to classification.
+            </p>
+            <p>
+              AGAPE is deployed through a user-friendly web interface supporting batch prediction and secure data handling. This work provides a robust and interpretable tool for accelerating the discovery of selective 
+              G4-stabilizing compounds and highlights the value of integrating quantum chemical insights into ML-driven chemoinformatics.
+            </p>
+
+          </div>
+        </div>
+
+
+
+      </section>
+{% endblock %}
