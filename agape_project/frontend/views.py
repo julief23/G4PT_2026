@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
+from django.shortcuts import redirect
 
-# Create your views here.
+class HomeView(TemplateView):
+    template_name = "frontend/home.html"
+
+
+def home_redirect(request):
+    return redirect("home")

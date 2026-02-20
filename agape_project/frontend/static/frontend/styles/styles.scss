@@ -142,32 +142,14 @@ button:hover,
 }
 
 /* ============================= */
-/* SECTIONS */
+/* SECTIONS (STATIC VERSION) */
 /* ============================= */
 
 section {
-  min-height: 100vh;
   width: 100%;
   position: relative;
   background-color: var(--section-bg-color);
-  transition: all 0.4s ease-in-out;
-  display: none;
-  transform: translateY(-100%);
-}
-
-.section.active {
-  display: block;
-  transform: translateY(0);
-}
-
-section.hidden {
-  opacity: 0;
-  transform: translateY(50px);
-}
-
-section.visible {
-  opacity: 1;
-  transform: translateY(0);
+  padding: 3rem 0;
 }
 
 /* ============================= */
