@@ -25,6 +25,9 @@
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" integrity="sha256-oxqX0LQclbvrsJt8IymkxnISn4Np2Wy2rY9jjoQlDEg=" crossorigin="anonymous">
 
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+
   <!-- Custom Styles -->
   <link rel="stylesheet" href="{% static 'frontend/styles/styles.css' %}">
 
@@ -73,13 +76,12 @@
 
 
   {% if request.resolver_match.url_name == "home" %}
-    <button
-      id="start-simulation-btn"
+    <a
+      href="{% url 'simulator:simulation' %}"
       class="btn run-button mt-3"
-      onclick="activateSection('simulation')"
     >
       Start Simulation
-    </button>
+    </a>
   {% endif %}
 
 </header>

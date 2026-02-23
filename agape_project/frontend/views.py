@@ -12,3 +12,4 @@ class HomeView(TemplateView):
 
 def home_redirect(request):
     return redirect("home")
+

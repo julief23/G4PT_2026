@@ -351,3 +351,33 @@ input[type="text"],
 .gtranslate-float {
   display: none !important;
 }
+
+/* FAQ accordion clean styling */
+
+.accordion-button {
+  background-color: #ffffff !important;
+  color: var(--text-color) !important;
+  font-weight: 500;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+.accordion-button:hover {
+  background-color: #f8f8f8 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: #f8f9fa !important;  
+  color: var(--text-color) !important;
+  box-shadow: none !important;
+}
+
+.accordion-item {
+  border: 1px solid #e5e5e5;
+}
+
+.accordion-button:focus {
+  box-shadow: none !important;
+}

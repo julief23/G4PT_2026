@@ -3,3 +3,7 @@ Django==5.1.15
 sqlparse==0.5.5
 tzdata==2025.3
 django-extensions
+rdkit
+mordred
+setuptools
+wheel
