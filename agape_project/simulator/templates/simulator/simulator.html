@@ -111,8 +111,22 @@
 
             <!-- AGAPE v1.0 (CSV) -->
             <div class="mb-5" id="classicalCsvBlock">
+
+                <div class="alert alert-info mb-4">
+                  <small>
+                    Upload a CSV file containing your molecules.  
+                    <br><br>
+                    You can provide:
+                    <ul class="mb-2">
+                      <li><strong>• Only a SMILES column</strong> — the platform will automatically calculate the molecular descriptors for you.</li>
+                      <li><strong>• SMILES + precomputed Mordred descriptors</strong> — the platform will use your provided descriptors directly.</li>
+                    </ul>
+                    Make sure your CSV includes a column named <strong>SMILES</strong> if you want automatic descriptor calculation.
+                  </small>
+                </div>         
+              
               <h6 class="fw-bold" style="color: var(--primary-color);">AGAPE Version 1.0</h6>
-              <p style="color: var(--text-color);">Upload classical descriptors and run predictions</p>
+              <p style="color: var(--text-color);">Upload and run predictions</p>
 
               <div class="agape_csv d-flex align-items-center mb-2">
                 <img src="{% static 'frontend/images/csv_logo.png' %}" style="height: 20px; margin-right: 8px;" alt="CSV Icon" />
@@ -136,7 +150,12 @@
             <!-- AGAPE v2.0 (SMILES + JSME) -->
             <div class="mt-4" id="classicalSmilesBlock" style="display:none;">
               <h6 class="fw-bold" style="color: var(--primary-color);">
-                AGAPE Version 2.0 <span class="text-success">(Enabled)</span>
+            <div class="alert alert-info mb-4">
+              <small>
+                You can either import a SMILES string or draw your molecule directly using the interactive editor below.
+              </small>
+            </div>
+                AGAPE Version 2.0
               </h6>
               <p style="color: var(--primary-color);">Interactive molecule editor and SMILES input</p>
               <p style="color: var(--primary-color);">Automated Calculation of Classical Descriptors</p>
@@ -154,21 +173,18 @@
                   </iframe>
                 </div>
                 <!-- SMILES OUTPUT -->
+
                 <input
                   type="text"
                   class="form-control mb-3"
                   name="smiles"
                   id="smilesInput"
                   translate="no"
-                  placeholder="Binders SMILES Output"
+                  placeholder="Auto-generated SMILES Output"
                   style="width: 100%;"
                   readonly
                 />
 
-                <!-- Optional helper text -->
-                <small class="mt-2" style="color: var(--text-color); opacity: 0.8;">
-                  Paste a SMILES or draw a molecule in the editor (integration can auto-fill the SMILES field).
-                </small>
               </div>
             </div>
 
