@@ -3,77 +3,87 @@
 {% block title %}AGAPE - Simulator{% endblock %}
 
 {% block content %}
- 
+
 <section class="section sec3 simulation py-5" id="simulation">
   <div class="container">
-    <h2 class="text-left mb-4">Simulation</h2>
+    <h2 class="mb-4">Simulation</h2>
 
-      {% if messages %}
-        <div class="custom-messages">
-          {% for message in messages %}
-            <div class="custom-message {{ message.tags }}">
-              <span class="close-btn">&times;</span>
-              {{ message }}
-            </div>
-          {% endfor %}
-        </div>
-      {% endif %}
-
-
-
-    <form id="simulation-form" method="post" enctype="multipart/form-data" action="{% url 'simulator:simulation' %}">
+    <form method="post"
+          enctype="multipart/form-data"
+          action="{% url 'simulator:run_simulation' %}#simulation"
+          novalidate>
       {% csrf_token %}
 
-
-      <div class="alert alert-warning mt-2 ms-0 py-2 px-2" role="alert">
-        ⚠️ Classical descriptors should be computed using Mordred (open source); Please ensure that your input data follows the format presented below.
+      <div class="alert alert-warning">
+        ⚠️ Classical descriptors are computed using Mordred (open source).
+        Please ensure that your input format matches the template.
       </div>
 
+      <!-- Job Name -->
       <div class="card mb-4 shadow-sm">
         <div class="card-header bg-light">
-          <h5 class="mb-0" style="color: var(--secondary-color);">Job Name</h5>
+          <h5 class="mb-0">Job Name</h5>
         </div>
         <div class="card-body">
           <input type="text"
-                class="form-control"
-                id="jobName"
-                name="job_name"
-                required 
-                maxlength="100" 
-                placeholder="e.g., Binder-G4 complex"
-                translate="no"
-                style="max-width: 450px;">
+                 class="form-control"
+                 name="job_name"
+                 maxlength="100"
+                 placeholder="e.g., Binder-G4 complex"
+                 value="{{ form.data.job_name|default:'' }}"
+                 translate="no">
+
+          {% if form.errors.job_name %}
+            <div class="text-danger mt-2">
+              {{ form.errors.job_name.0 }}
+            </div>
+          {% endif %}
         </div>
       </div>
-
-
 
       <!-- Model Selection -->
       <div class="card mb-4 shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Model Selection</h5>
-          <button class="btn btn-outline-primary toggle-btn" type="button"
-            data-bs-toggle="collapse" data-bs-target="#modelSelectionCollapse"
-            aria-expanded="true" aria-controls="modelSelectionCollapse">
-            <span class="toggle-icon">▲</span>
+          <button class="btn btn-outline-primary"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#modelSelectionCollapse">
+            ▲
           </button>
         </div>
 
-
         <div id="modelSelectionCollapse" class="collapse show">
           <div class="card-body">
+
             <div class="form-check mb-3">
-              <input class="form-check-input" type="radio" name="modelType" id="reducedModelRadio" value="reduced" checked>
-              <label class="form-check-label" for="reducedModelRadio" style="color: var(--text-color);">
-                <strong>Lightweight Model</strong> — 180 selected features (faster, simpler)
+              <input class="form-check-input"
+                     type="radio"
+                     name="modelType"
+                     value="reduced"
+                     {% if form.data.modelType == "reduced" or not form.data.modelType %}checked{% endif %}>
+              <label class="form-check-label">
+                <strong>Lightweight Model</strong> — 180 selected features
               </label>
             </div>
+
             <div class="form-check">
-              <input class="form-check-input" type="radio" name="modelType" id="generalModelRadio" value="general">
-              <label class="form-check-label" for="generalModelRadio" style="color: var(--text-color);">
-                <strong>Comprehensive Model</strong> — Full set of 489 descriptors
+              <input class="form-check-input"
+                     type="radio"
+                     name="modelType"
+                     value="general"
+                     {% if form.data.modelType == "general" %}checked{% endif %}>
+              <label class="form-check-label">
+                <strong>Comprehensive Model</strong> — 489 descriptors
               </label>
             </div>
+
+            {% if form.errors.modelType %}
+              <div class="text-danger mt-2">
+                {{ form.errors.modelType.0 }}
+              </div>
+            {% endif %}
+
           </div>
         </div>
       </div>
@@ -82,167 +92,206 @@
       <div class="card mb-4 shadow-sm">
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Classical Descriptors</h5>
-          <button class="btn btn-outline-primary toggle-btn" type="button"
-            data-bs-toggle="collapse" data-bs-target="#csvUploadCollapse"
-            aria-expanded="true" aria-controls="csvUploadCollapse">
-            <span class="toggle-icon">▲</span>
+          <button class="btn btn-outline-primary"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#csvUploadCollapse">
+            ▲
           </button>
         </div>
 
         <div id="csvUploadCollapse" class="collapse show">
           <div class="card-body">
 
-            <!-- INPUT MODE SWITCH -->
-            <div class="mb-3">
-              <div class="form-check mb-2">
-                <input class="form-check-input" type="radio" name="classicalInputType" id="classicalCsvMode" value="csv" checked>
-                <label class="form-check-label" for="classicalCsvMode" style="color: var(--text-color);">
+            <!-- Input Mode -->
+            <div class="mb-4">
+
+              <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       name="classicalInputType"
+                       id="csvMode"
+                       value="csv"
+                       {% if form.data.classicalInputType == "csv" or not form.data.classicalInputType %}checked{% endif %}>
+                <label class="form-check-label">
                   <strong>Use CSV upload (AGAPE v1.0)</strong>
+                  <span class="badge bg-success ms-2">Batch Mode</span>
                 </label>
               </div>
 
               <div class="form-check">
-                <input class="form-check-input" type="radio" name="classicalInputType" id="classicalSmilesMode" value="smiles">
-                <label class="form-check-label" for="classicalSmilesMode" style="color: var(--text-color);">
-                  <strong>Use SMILES + Molecule editor (AGAPE v2.0)</strong>
+                <input class="form-check-input"
+                       type="radio"
+                       name="classicalInputType"
+                       id="smilesMode"
+                       value="smiles"
+                       {% if form.data.classicalInputType == "smiles" %}checked{% endif %}>
+                <label class="form-check-label">
+                  <strong>Single SMILES Input (AGAPE v2.0)</strong>
                 </label>
               </div>
-            </div>
 
-            <!-- AGAPE v1.0 (CSV) -->
-            <div class="mb-5" id="classicalCsvBlock">
-
-                <div class="alert alert-info mb-4">
-                  <small>
-                    Upload a CSV file containing your molecules.  
-                    <br><br>
-                    You can provide:
-                    <ul class="mb-2">
-                      <li><strong>• Only a SMILES column</strong> — the platform will automatically calculate the molecular descriptors for you.</li>
-                      <li><strong>• SMILES + precomputed Mordred descriptors</strong> — the platform will use your provided descriptors directly.</li>
-                    </ul>
-                    Make sure your CSV includes a column named <strong>SMILES</strong> if you want automatic descriptor calculation.
-                  </small>
-                </div>         
-              
-              <h6 class="fw-bold" style="color: var(--primary-color);">AGAPE Version 1.0</h6>
-              <p style="color: var(--text-color);">Upload and run predictions</p>
-
-              <div class="agape_csv d-flex align-items-center mb-2">
-                <img src="{% static 'frontend/images/csv_logo.png' %}" style="height: 20px; margin-right: 8px;" alt="CSV Icon" />
-                <a target="_blank" href="{% static 'frontend/Documents/Descriptors_for_ML_Template.csv' %}">
-                  <u><strong style="color: var(--text-color);">CSV Template for Classical Descriptors</strong></u>
-                </a>
+              <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       name="classicalInputType"
+                       id="drawMode"
+                       value="draw"
+                       {% if form.data.classicalInputType == "draw" %}checked{% endif %}>
+                <label class="form-check-label">
+                  <strong>Draw using Molecule Editor (AGAPE v2.0)</strong>
+                </label>
               </div>
 
-              <label for="customFileUploadLigand" translate="no" style="color: var(--primary-color);">Upload G4-Binders Descriptors CSV</label>
-              <input
-                type="file"
-                class="form-control"
-                id="customFileUploadLigand"
-                name="classicalCsv"
-                required
-                accept=".csv"
-                style="max-width: 450px;"
-              />
-            </div>
-
-            <!-- AGAPE v2.0 (SMILES + JSME) -->
-            <div class="mt-4" id="classicalSmilesBlock" style="display:none;">
-              <h6 class="fw-bold" style="color: var(--primary-color);">
-            <div class="alert alert-info mb-4">
-              <small>
-                You can either import a SMILES string or draw your molecule directly using the interactive editor below.
-              </small>
-            </div>
-                AGAPE Version 2.0
-              </h6>
-              <p style="color: var(--primary-color);">Interactive molecule editor and SMILES input</p>
-              <p style="color: var(--primary-color);">Automated Calculation of Classical Descriptors</p>
-
-              <div class="d-flex flex-column w-100">
-
-                <!-- JSME iframe -->
-                <div class="position-relative w-100">
-                  <iframe
-                    src="{% url 'simulator:jsme' %}"
-                    width="100%"
-                    height="450"
-                    style="border: none; border-radius: 6px;"
-                    title="JSME Editor">
-                  </iframe>
+              {% if form.errors.classicalInputType %}
+                <div class="text-danger mt-2">
+                  {{ form.errors.classicalInputType.0 }}
                 </div>
-                <!-- SMILES OUTPUT -->
+              {% endif %}
+            </div>
 
-                <input
-                  type="text"
-                  class="form-control mb-3"
-                  name="smiles"
-                  id="smilesInput"
-                  translate="no"
-                  placeholder="Auto-generated SMILES Output"
-                  style="width: 100%;"
-                  readonly
-                />
+            <!-- CSV Block -->
+            <div id="csvBlock">
+             
+              {% if form.errors.classicalCsv %}
+                <div class="text-danger mt-2">
+                  {{ form.errors.classicalCsv.0 }}
+                </div>
+              {% endif %}
 
+                <div class="agape_csv mb-2 d-flex align-items-center">
+                  <img src="/static/frontend/images/csv_logo.png" style="height: 20px; margin-right: 8px;" alt="CSV Icon" />
+                  <a target="_blank" href="/static/frontend/Documents/mordred_descriptors_output_example.csv">
+                    <u><strong style="color: var(--text-color);">CSV Template with Classical Molecular Descriptors</strong></u>
+                  </a>
+                </div>
+
+              <div class="alert alert-info">
+                Upload a CSV file containing:
+                <ul class="mb-0">
+                  <li>SMILES column only (descriptors auto-computed)</li>
+                  <li>SMILES + precomputed Mordred descriptors</li>
+                </ul>
               </div>
+
+              <input type="file"
+                     class="form-control"
+                     name="classicalCsv"
+                     id="csvInput"
+                     accept=".csv">
+
+            </div>
+
+            <!-- SMILES Block -->
+            <div id="smilesBlock" style="display:none;">
+
+              {% if form.errors.smiles %}
+                <div class="text-danger mt-2">
+                  {{ form.errors.smiles.0 }}
+                </div>
+              {% endif %}
+
+              <div class="alert alert-info">
+                Enter a single SMILES string.
+              </div>
+
+              <input type="text"
+                     class="form-control"
+                     name="smiles"
+                     id="smilesInput"
+                     value="{{ form.data.smiles|default:'' }}">
+
+
+            </div>
+
+            <!-- Draw Block -->
+            <div id="drawBlock" style="display:none;">
+
+              {% if form.errors.draw %}
+                <div class="text-danger mt-2">
+                  {{ form.errors.draw.0 }}
+                </div>
+              {% endif %}
+
+              <div class="alert alert-info">
+                Draw your molecule below.
+              </div>
+
+              <iframe src="{% url 'simulator:jsme' %}"
+                      width="100%"
+                      height="450"
+                      style="border: none;">
+              </iframe>
+
+              <input type="text"
+                     class="form-control mt-3"
+                     name="draw"
+                     id="drawInput"
+                     value="{{ form.data.draw|default:'' }}"
+                     readonly>
+
             </div>
 
           </div>
         </div>
       </div>
-      <!-- End Classical card -->
 
-
-
-      <!-- Launch Button -->
-      <div class="mt-4 mb-2 text-center">
-        <button class="btn btn-primary run-button" type="submit">
+      <div class="text-center">
+        <button class="btn btn-primary" type="submit">
           Launch AGAPE
         </button>
       </div>
 
     </form>
   </div>
-
-
 </section>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-  const csvMode = document.getElementById("classicalCsvMode");
-  const smilesMode = document.getElementById("classicalSmilesMode");
 
-  const csvBlock = document.getElementById("classicalCsvBlock");
-  const smilesBlock = document.getElementById("classicalSmilesBlock");
+  const csvMode = document.getElementById("csvMode");
+  const smilesMode = document.getElementById("smilesMode");
+  const drawMode = document.getElementById("drawMode");
 
-  const csvInput = document.getElementById("customFileUploadLigand");
-  const smilesInput = document.getElementById("smilesInput");
+  const csvBlock = document.getElementById("csvBlock");
+  const smilesBlock = document.getElementById("smilesBlock");
+  const drawBlock = document.getElementById("drawBlock");
 
   function updateMode() {
-    const useCsv = csvMode.checked;
+    const isCsv = csvMode.checked;
+    const isSmiles = smilesMode.checked;
+    const isDraw = drawMode.checked;
 
-    csvBlock.style.display = useCsv ? "block" : "none";
-    smilesBlock.style.display = useCsv ? "none" : "block";
-
-    csvInput.required = useCsv;
-    csvInput.disabled = !useCsv;
-
-    smilesInput.required = !useCsv;
-    smilesInput.disabled = useCsv;
+    csvBlock.style.display = isCsv ? "block" : "none";
+    smilesBlock.style.display = isSmiles ? "block" : "none";
+    drawBlock.style.display = isDraw ? "block" : "none";
   }
 
   csvMode.addEventListener("change", updateMode);
   smilesMode.addEventListener("change", updateMode);
+  drawMode.addEventListener("change", updateMode);
+
   updateMode();
 });
-</script>
-<script>
+
 window.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "JSME_SMILES") {
-    const inp = document.getElementById("smilesInput");
-    if (inp) inp.value = event.data.smiles || "";
+  if (event.data?.type === "JSME_SMILES") {
+    const input = document.getElementById("drawInput");
+    if (input) input.value = event.data.smiles || "";
   }
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+
+  const firstError = document.querySelector(".text-danger");
+
+  if (firstError) {
+    firstError.scrollIntoView({
+      block: "center"
+    });
+  }
+
+});
 </script>
+
 {% endblock %}

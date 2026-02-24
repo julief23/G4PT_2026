@@ -9,8 +9,6 @@ from .views import (
     download_prediction_csv,
 )
 
-app_name = "simulator"
-
 urlpatterns = [
     path("", SimulatorView.as_view(), name="simulation"),
     path("results/", ResultsView.as_view(), name="results"),

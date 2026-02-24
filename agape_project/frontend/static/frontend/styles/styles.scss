@@ -381,3 +381,7 @@ input[type="text"],
 .accordion-button:focus {
   box-shadow: none !important;
 }
+
+html {
+  scroll-behavior: auto;
+}
