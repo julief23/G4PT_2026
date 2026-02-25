@@ -7,3 +7,7 @@ rdkit
 mordred
 setuptools
 wheel
+tensorflow
+joblib
+matplotlib
+scikit-learn

@@ -3,7 +3,6 @@
 {% block title %}AGAPE - Results{% endblock %}
 
 {% block content %}
- 
 
 <section class="section sec4 results py-5" id="results">
   <div class="container">
@@ -19,54 +18,91 @@
       </div>
     {% endif %}
 
-  
-    <h2 class="text-left mb-1">Summary</h2>
+    <h2 class="text-left mb-2">Summary</h2>
 
-      {% if results.job_name %}
-        <a href="{% url 'download_prediction_csv' results.job_name %}" class="btn btn-success">
-          Download Predictions CSV
-        </a>
-      {% endif %}
-      <br>
+    <a href="{% url 'simulator:download_prediction' %}" 
+       class="btn btn-outline-primary mb-3">
+      Download Results (CSV)
+    </a>
 
-    <div class="results-table-container">
-    
-
-      {% if results %}
-      <div class="mb-4 p-3" style="border: 1px solid var(--primary-color); border-radius: 10px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); background-color: var(--section-bg-color);">
-        <p><strong>Model Used:</strong> {{ results.model|default:"—" }}</p>
-        <p><strong>Descriptors:</strong> {{ results.descriptors|default:"—" }}</p>
+    {% if results %}
+      <div class="mb-4 p-3"
+           style="border: 1px solid var(--primary-color);
+                  border-radius: 10px;
+                  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                  background-color: var(--section-bg-color);">
+        <p><strong>Model Used:</strong> {{ model_used|default:"—" }}</p>
+        <p><strong>Descriptors:</strong> {{ descriptors_used|default:"—" }}</p>
       </div>
-      {% endif %}
-    </div>
+    {% endif %}
+
   </div>
 
   <div class="container">
     <h2 class="text-left mb-4">Prediction Results</h2>
+
     <div class="results-table-container">
-      {% if results.prediction_table %}
-        <table class="results-table table table-bordered text-center">
+
+      {% if results %}
+        <table class="results-table table table-bordered text-center align-middle">
           <thead>
             <tr>
               <th>#</th>
-              <th>Classification</th>
+              <th>SMILES</th>
+              <th>Prediction</th>
+              <th>Probability (ACTIVE)</th>
+              <th>Confidence</th>
             </tr>
           </thead>
           <tbody>
-            {% for row in results.prediction_table %}
+
+            {% for row in results %}
             <tr>
-              <td>{{ row.index }}</td>
+              <td>{{ forloop.counter }}</td>
+              <td style="word-break: break-all;">{{ row.smiles }}</td>
+
+              <!-- Prediction -->
               <td>
-                {% if row.classification == "ACTIVE" %}
-                  <span class="green-text">{{ row.classification }}</span>
-                {% elif row.classification == "INACTIVE" %}
-                  <span class="red-text">{{ row.classification }}</span>
+                {% if row.prediction == "ACTIVE" %}
+                  <span class="badge bg-success">ACTIVE</span>
+                {% elif row.prediction == "INACTIVE" %}
+                  <span class="badge bg-danger">INACTIVE</span>
+                {% elif row.prediction == "INVALID" %}
+                  <span class="badge bg-secondary">INVALID</span>
                 {% else %}
-                  {{ row.classification|default:"—" }}
+                  —
                 {% endif %}
               </td>
+
+              <!-- Probability -->
+              <td>
+                {% if row.probability_active is not None %}
+                  {{ row.probability_active|floatformat:4 }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <!-- Confidence -->
+              <td>
+                {% if row.confidence_level %}
+                  {% if row.confidence_level == "High" %}
+                    <span class="badge bg-success">High</span>
+                  {% elif row.confidence_level == "Moderate" %}
+                    <span class="badge bg-warning text-dark">Moderate</span>
+                  {% elif row.confidence_level == "Low" %}
+                    <span class="badge bg-danger">Low</span>
+                  {% else %}
+                    —
+                  {% endif %}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
             </tr>
             {% endfor %}
+
           </tbody>
         </table>
       {% else %}
@@ -74,9 +110,7 @@
       {% endif %}
 
     </div>
-
   </div>
-
 
 </section>
 

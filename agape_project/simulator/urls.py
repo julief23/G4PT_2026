@@ -16,5 +16,5 @@ urlpatterns = [
     path("FAQ/", FAQView.as_view(), name="faq"),
     path("jsme/", JSMEView.as_view(), name="jsme"),
     path("run_simulation/", run_simulation, name="run_simulation"),
-    path("download/<str:job_name>/", download_prediction_csv, name="download_prediction_csv"),
+    path("download/", download_prediction_csv, name="download_prediction"),
 ]
