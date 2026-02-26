@@ -1,8 +1,9 @@
 import tensorflow as tf
 import joblib
 import pandas as pd
-import numpy as np
 from pathlib import Path
+
+from .preprocessing import align_and_impute, FEATURE_MEDIANS
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -20,27 +21,32 @@ class AGAPEPredictor:
         self.feature_names = joblib.load(feature_path)
 
     def preprocess(self, descriptor_df: pd.DataFrame):
-        # Check missing features
-        missing = set(self.feature_names) - set(descriptor_df.columns)
-        if missing:
-            raise ValueError(f"Missing descriptors: {missing}")
+        """
+        Align features, apply median imputation,
+        scale and return imputation percentage.
+        """
 
-        # Keep correct columns
-        X = descriptor_df[self.feature_names]
+        # Use align + impute 
+        X_clean, imputation_percent, per_row_missing, n_features, per_row_missing_str = align_and_impute(
+            descriptor_df,
+            self.feature_names,
+            FEATURE_MEDIANS
+        )
 
-        # Enforce ordering
-        X = X[self.feature_names]
+        X_scaled = self.scaler.transform(X_clean)
 
-        # Clean
-        X = X.fillna(0)
-
-        # Scale
-        return self.scaler.transform(X)
+        return X_scaled, imputation_percent, per_row_missing_str
 
     def predict(self, descriptor_df: pd.DataFrame):
-        X_scaled = self.preprocess(descriptor_df)
+
+        X_scaled, imputation_percent, per_row_missing_str = self.preprocess(descriptor_df)
 
         probs = self.model.predict(X_scaled)
         preds = (probs > 0.5).astype(int)
 
-        return preds.flatten(), probs.flatten()
+        return (
+            preds.flatten(),
+            probs.flatten(),
+            imputation_percent,
+            per_row_missing_str
+        )

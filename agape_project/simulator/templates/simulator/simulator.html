@@ -63,7 +63,7 @@
                      value="reduced"
                      {% if form.data.modelType == "reduced" or not form.data.modelType %}checked{% endif %}>
               <label class="form-check-label">
-                <strong>Lightweight Model</strong> — 180 selected features
+                <strong>Lightweight Model</strong> — 75 selected features
               </label>
             </div>
 
@@ -74,8 +74,7 @@
                      value="general"
                      {% if form.data.modelType == "general" %}checked{% endif %}>
               <label class="form-check-label">
-                <strong>Comprehensive Model</strong> — 489 descriptors
-              </label>
+                <strong>Locked for now</strong> 
             </div>
 
             {% if form.errors.modelType %}
@@ -88,8 +87,21 @@
         </div>
       </div>
 
+
+        {% if messages %}
+          <div class="mb-3">
+            {% for message in messages %}
+              <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
       <!-- Classical Descriptors -->
       <div class="card mb-4 shadow-sm">
+
         <div class="card-header bg-light d-flex justify-content-between align-items-center">
           <h5 class="mb-0">Classical Descriptors</h5>
           <button class="btn btn-outline-primary"
@@ -167,7 +179,7 @@
                 </div>
 
               <div class="alert alert-info">
-                Upload a CSV file containing:
+                Upload a CSV file containing a MAXIMUM of 150:
                 <ul class="mb-0">
                   <li>SMILES column only (descriptors auto-computed)</li>
                   <li>SMILES + precomputed Mordred descriptors</li>
@@ -205,7 +217,36 @@
             </div>
 
             <!-- Draw Block -->
+
+
+
             <div id="drawBlock" style="display:none;">
+
+            <div class="alert alert-danger mt-3" role="alert" style="border-left: 6px solid #b30000;">
+
+              <strong>⚠ Important — SMILES Reinterpretation Warning</strong>
+              <hr class="my-2">
+
+              For complex molecules, submitting a SMILES string directly through the JSME pasting option may produce 
+              different prediction results compared to single SMILES input.
+
+              <br>
+
+              The JSME editor automatically reinterprets and reformats SMILES strings. Although the chemical structure remains equivalent, the textual representation 
+              may differ slightly.
+
+              <br>
+
+              Since molecular descriptors are computed from the exact SMILES representation,
+              even small formatting differences can lead to variations in calculated descriptors 
+              and therefore affect the final prediction.
+
+              <br>
+
+              <strong>Recommendation:</strong> For reproducible results with complex structures, 
+              use single SMILES input instead.
+
+            </div>
 
               {% if form.errors.draw %}
                 <div class="text-danger mt-2">

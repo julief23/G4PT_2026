@@ -12,6 +12,7 @@ import os
 import io
 import mimetypes
 from .forms import SimulationForm
+from .services.csv_utils import robust_csv_reader
 from .services.smiles_utils import canonicalize_smiles
 from .services.predictor import AGAPEPredictor
 
@@ -58,6 +59,7 @@ class FAQView(TemplateView):
 class JSMEView(TemplateView):
     template_name = "simulator/jsme_embed.html"
 
+
 def run_simulation(request):
 
     if request.method == "POST":
@@ -86,7 +88,17 @@ def run_simulation(request):
 
                 elif input_mode == "csv":
                     csv_file = form.cleaned_data.get("classicalCsv")
-                    df = pd.read_csv(csv_file)
+
+                    df = robust_csv_reader(csv_file)
+
+                    MAX_ROWS = 151
+
+                    if len(df) > MAX_ROWS:
+                        messages.error(
+                            request,
+                            f"CSV too large: {len(df)} rows detected. Maximum allowed is {MAX_ROWS}."
+                        )
+                        return render(request, "simulator/simulator.html", {"form": form})
 
                     if "SMILES" not in df.columns:
                         raise ValueError("CSV must contain a 'SMILES' column.")
@@ -104,7 +116,7 @@ def run_simulation(request):
                 # ------------------------------------------
 
                 canonical_smiles = []
-                validity_flags = []   # keeps track of validity
+                validity_flags = []
                 invalid_smiles = []
 
                 for smi in smiles_list:
@@ -117,8 +129,9 @@ def run_simulation(request):
                         canonical_smiles.append(can)
                         validity_flags.append(True)
 
+
                 # ------------------------------------------
-                # SINGLE MOLECULE MODE: BLOCK IF INVALID
+                # HARD STOP FOR SINGLE MOLECULE MODE
                 # ------------------------------------------
 
                 if input_mode in ["smiles", "draw"]:
@@ -131,23 +144,23 @@ def run_simulation(request):
                             "form": form
                         })
 
+
                 # ------------------------------------------
                 # 3️⃣ HANDLE BATCH LOGIC
                 # ------------------------------------------
 
                 results = []
 
-                # Only compute descriptors for valid molecules
                 valid_smiles_only = [
                     smi for smi, valid in zip(canonical_smiles, validity_flags)
                     if valid
                 ]
 
                 descriptor_df = None
+                use_precomputed = False
 
                 if valid_smiles_only:
 
-                    # Check if CSV already has required 75 features
                     use_precomputed = False
 
                     if input_mode == "csv":
@@ -160,20 +173,26 @@ def run_simulation(request):
                             [i for i, v in enumerate(validity_flags) if v]
                         ].reset_index(drop=True)
                         descriptor_df["SMILES"] = valid_smiles_only
-
                     else:
                         descriptor_df = compute_mordred_from_smiles_list(
                             valid_smiles_only
                         )
 
-                    # Align features
-                    descriptor_df = descriptor_df[predictor.feature_names]
+                    # Predictor now handles alignment + imputation
+                    preds, probs, imputation_percent, per_row_impute = predictor.predict(descriptor_df)
 
-                    preds, probs = predictor.predict(descriptor_df)
+                    # Imputation transparency
+                    if imputation_percent > 0:
+                        messages.warning(
+                            request,
+                            f"{round(imputation_percent,2)}% of descriptor values "
+                            "were missing or invalid and replaced using training medians."
+                        )
 
                 else:
                     preds = []
                     probs = []
+                    imputation_percent = 0
 
                 # ------------------------------------------
                 # 4️⃣ REBUILD RESULTS IN ORIGINAL ORDER
@@ -194,10 +213,8 @@ def run_simulation(request):
                         prob_active = float(probs[valid_index])
                         pred = preds[valid_index]
 
-                        # Compute confidence as probability of predicted class
                         model_confidence = max(prob_active, 1 - prob_active)
 
-                        # Define confidence level based on distance from 0.5
                         if model_confidence > 0.85:
                             confidence = "High"
                         elif model_confidence > 0.65:
@@ -216,7 +233,7 @@ def run_simulation(request):
                         valid_index += 1
 
                 # ------------------------------------------
-                # 5️⃣ CSV MODE WARNING IF INVALID FOUND
+                # 5️⃣ WARN ABOUT INVALID SMILES
                 # ------------------------------------------
 
                 if input_mode == "csv" and invalid_smiles:
@@ -225,16 +242,41 @@ def run_simulation(request):
                         f"{len(invalid_smiles)} invalid SMILES detected and skipped."
                     )
 
+                # ------------------------------------------
+                # 6️⃣ SUCCESS MESSAGE
+                # ------------------------------------------
+
+                if len(valid_smiles_only) > 0:
+                    messages.success(
+                        request,
+                        f"Prediction completed successfully for {len(valid_smiles_only)} molecule(s)."
+                    )
+                else:
+                    messages.error(
+                        request,
+                        "No valid SMILES found. Prediction was not performed."
+                    )
+                    return render(request, "simulator/simulator.html", {
+                        "form": form
+                    })
+
                 request.session["prediction_results"] = results
                 request.session["job_name"] = job_name
 
                 return render(request, "simulator/results.html", {
                     "results": results,
-                    "job_name": job_name
+                    "job_name": job_name,
+                    "model_used": model_type,
+                    "descriptors_used": (
+                        "Precomputed (CSV)"
+                        if use_precomputed else
+                        "Computed via Mordred"
+                    ),
+                    "imputation_percent": round(imputation_percent, 2),
                 })
 
             except Exception as e:
-                messages.error(request, str(e))
+                messages.error(request, f"Simulation error: {str(e)}")
                 return render(request, "simulator/simulator.html", {
                     "form": form
                 })
@@ -245,6 +287,7 @@ def run_simulation(request):
     return render(request, "simulator/simulator.html", {
         "form": form
     })
+
 
 
 def download_prediction_csv(request):

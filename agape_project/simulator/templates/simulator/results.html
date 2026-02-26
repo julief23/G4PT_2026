@@ -7,16 +7,32 @@
 <section class="section sec4 results py-5" id="results">
   <div class="container">
 
-    {% if messages %}
-      <div class="custom-messages">
-        {% for message in messages %}
-          <div class="custom-message {{ message.tags }}">
-            <span class="close-btn">&times;</span>
-            {{ message }}
-          </div>
-        {% endfor %}
-      </div>
-    {% endif %}
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="alert 
+                    {% if message.tags == 'success' %}
+                        alert-success
+                    {% elif message.tags == 'error' %}
+                        alert-danger
+                    {% elif message.tags == 'warning' %}
+                        alert-warning
+                    {% else %}
+                        alert-info
+                    {% endif %}
+                    alert-dismissible fade show"
+            role="alert">
+
+          {{ message }}
+
+          <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
 
     <h2 class="text-left mb-2">Summary</h2>
 
@@ -52,6 +68,7 @@
               <th>Prediction</th>
               <th>Probability (ACTIVE)</th>
               <th>Confidence</th>
+              <th>Imputed features</th>
             </tr>
           </thead>
           <tbody>
@@ -95,6 +112,15 @@
                   {% else %}
                     —
                   {% endif %}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <!-- Imputed features -->
+              <td>
+                {% if row.imputed_features %}
+                  {{ row.imputed_features }}
                 {% else %}
                   —
                 {% endif %}

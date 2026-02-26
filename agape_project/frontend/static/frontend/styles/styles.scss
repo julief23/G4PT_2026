@@ -385,3 +385,15 @@ input[type="text"],
 html {
   scroll-behavior: auto;
 }
+
+
+.alert .btn-close {
+    background: none !important;
+    background-color: none !important;
+    box-shadow: none !important;
+    opacity: 0.6;
+}
+
+.alert .btn-close:hover {
+    opacity: 1;
+}
