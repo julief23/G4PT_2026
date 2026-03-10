@@ -54,6 +54,8 @@ class FAQView(TemplateView):
         context["active_page"] = "FAQ"
         return context
 
+class UserGuideView(TemplateView):
+    template_name = "simulator/user_guide.html"
 
 @method_decorator(xframe_options_sameorigin, name="dispatch")
 class JSMEView(TemplateView):
