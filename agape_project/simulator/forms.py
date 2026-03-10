@@ -14,8 +14,8 @@ class SimulationForm(forms.Form):
     )
 
     MODEL_CHOICES = [
-        ("reduced", "Lightweight Model"),
-        ("general", "Comprehensive Model"),
+        ("DNN", "Deep neural network Model"),
+        ("ML", "XGboost Model"),
     ]
 
     modelType = forms.ChoiceField(

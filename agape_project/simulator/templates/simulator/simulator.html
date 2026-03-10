@@ -60,10 +60,10 @@
               <input class="form-check-input"
                      type="radio"
                      name="modelType"
-                     value="reduced"
-                     {% if form.data.modelType == "reduced" or not form.data.modelType %}checked{% endif %}>
+                     value="DNN"
+                     {% if form.data.modelType == "DNN" or not form.data.modelType %}checked{% endif %}>
               <label class="form-check-label">
-                <strong>Lightweight Model</strong> — 75 selected features
+                <strong>Deep Neural Network Model</strong> — 75 selected features
               </label>
             </div>
 
@@ -71,10 +71,10 @@
               <input class="form-check-input"
                      type="radio"
                      name="modelType"
-                     value="general"
-                     {% if form.data.modelType == "general" %}checked{% endif %}>
+                     value="ML"
+                     {% if form.data.modelType == "ML" %}checked{% endif %}>
               <label class="form-check-label">
-                <strong>Locked for now</strong> 
+                <strong>XGboost model - Locked for now</strong> 
             </div>
 
             {% if form.errors.modelType %}
@@ -284,11 +284,49 @@
       </div>
 
     </form>
+
+    <!-- RDKit Preview Modal -->
+<div class="modal fade" id="smilesPreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Validate molecule before launch</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <p>Please verify that the interpreted molecule matches your intended SMILES.</p>
+
+        <div class="text-center mb-3">
+          <img id="smilesPreviewImage" src="" alt="RDKit molecule preview" class="img-fluid border rounded">
+        </div>
+
+        <div class="mb-2">
+          <strong>Canonical SMILES:</strong>
+          <div id="canonicalSmilesText" class="small text-break mt-1"></div>
+        </div>
+
+        <div id="smilesPreviewError" class="alert alert-danger d-none mt-3"></div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="confirmSmilesSubmit">
+          Confirm and Launch AGAPE
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
   </div>
 </section>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+
+  const form = document.querySelector('form[action*="run_simulation"]');
 
   const csvMode = document.getElementById("csvMode");
   const smilesMode = document.getElementById("smilesMode");
@@ -298,7 +336,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const smilesBlock = document.getElementById("smilesBlock");
   const drawBlock = document.getElementById("drawBlock");
 
+  const smilesInput = document.getElementById("smilesInput");
+
+  const modalElement = document.getElementById("smilesPreviewModal");
+  const previewModal = new bootstrap.Modal(modalElement);
+
+  const previewImage = document.getElementById("smilesPreviewImage");
+  const canonicalSmilesText = document.getElementById("canonicalSmilesText");
+  const previewError = document.getElementById("smilesPreviewError");
+  const confirmButton = document.getElementById("confirmSmilesSubmit");
+
+  const overlay = document.getElementById("loading-overlay");
+
+  let confirmedSubmit = false;
+
+  /* ----------------------------- */
+  /* Input Mode Toggle */
+  /* ----------------------------- */
+
   function updateMode() {
+
     const isCsv = csvMode.checked;
     const isSmiles = smilesMode.checked;
     const isDraw = drawMode.checked;
@@ -313,27 +370,151 @@ document.addEventListener("DOMContentLoaded", () => {
   drawMode.addEventListener("change", updateMode);
 
   updateMode();
+
+  /* ----------------------------- */
+  /* CSRF Helper */
+  /* ----------------------------- */
+
+  function getCsrfToken() {
+    const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    return csrfInput ? csrfInput.value : "";
+  }
+
+  /* ----------------------------- */
+  /* Fetch RDKit Preview */
+  /* ----------------------------- */
+
+  async function fetchSmilesPreview(smiles) {
+
+    const body = new URLSearchParams();
+    body.append("smiles", smiles);
+    body.append("csrfmiddlewaretoken", getCsrfToken());
+
+    const response = await fetch("{% url 'simulator:preview_smiles' %}", {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+      },
+      body: body.toString()
+    });
+
+    return response.json();
+  }
+
+  /* ----------------------------- */
+  /* Form Submission Logic */
+  /* ----------------------------- */
+
+  form.addEventListener("submit", async function(event) {
+
+    if (confirmedSubmit) {
+      return;
+    }
+
+    /* CSV or DRAW mode → run immediately */
+    if (!smilesMode.checked) {
+
+      if (overlay) {
+        overlay.style.display = "flex";
+      }
+
+      return;
+    }
+
+    event.preventDefault();
+
+    const smiles = (smilesInput.value || "").trim();
+
+    if (!smiles) {
+      smilesInput.focus();
+      return;
+    }
+
+    previewError.classList.add("d-none");
+    previewError.textContent = "";
+    previewImage.src = "";
+    canonicalSmilesText.textContent = "";
+
+    try {
+
+      const data = await fetchSmilesPreview(smiles);
+
+      /* Invalid SMILES → let backend handle */
+      if (!data.ok) {
+
+        confirmedSubmit = true;
+        form.submit();
+        return;
+      }
+
+      previewImage.src = data.image;
+      canonicalSmilesText.textContent = data.canonical_smiles || "";
+
+      previewModal.show();
+
+    } catch (error) {
+
+      previewError.textContent = "Unexpected error while generating preview.";
+      previewError.classList.remove("d-none");
+
+      previewModal.show();
+    }
+  });
+
+  /* ----------------------------- */
+  /* Confirm Button Logic */
+  /* ----------------------------- */
+
+  confirmButton.addEventListener("click", function() {
+
+    confirmedSubmit = true;
+
+    previewModal.hide();
+
+    modalElement.addEventListener("hidden.bs.modal", function() {
+
+      if (overlay) {
+        overlay.style.display = "flex";
+      }
+
+      form.submit();
+
+    }, { once: true });
+
+  });
+
 });
 
+/* ----------------------------- */
+/* Receive SMILES from JSME iframe */
+/* ----------------------------- */
+
 window.addEventListener("message", (event) => {
+
   if (event.data?.type === "JSME_SMILES") {
+
     const input = document.getElementById("drawInput");
-    if (input) input.value = event.data.smiles || "";
+
+    if (input) {
+      input.value = event.data.smiles || "";
+    }
   }
 });
+
+/* ----------------------------- */
+/* Scroll to first error */
+/* ----------------------------- */
 
 document.addEventListener("DOMContentLoaded", function () {
 
   const firstError = document.querySelector(".text-danger");
 
   if (firstError) {
-    firstError.scrollIntoView({
-      block: "center"
-    });
+    firstError.scrollIntoView({ block: "center" });
   }
 
 });
-
 </script>
 
 {% endblock %}

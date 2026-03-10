@@ -34,6 +34,11 @@
     </div>
   {% endif %}
 
+
+
+    {% if results %}
+  
+
     <h2 class="text-left mb-2">Summary</h2>
 
     <a href="{% url 'simulator:download_prediction' %}" 
@@ -41,7 +46,6 @@
       Download Results (CSV)
     </a>
 
-    {% if results %}
       <div class="mb-4 p-3"
            style="border: 1px solid var(--primary-color);
                   border-radius: 10px;

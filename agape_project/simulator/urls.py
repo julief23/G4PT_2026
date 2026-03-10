@@ -6,6 +6,8 @@ from .views import (
     FAQView,
     JSMEView,
     UserGuideView,
+    DisclaimerGuideView,
+    preview_smiles,
     run_simulation,
     download_prediction_csv,
 )
@@ -18,5 +20,7 @@ urlpatterns = [
     path("user-guide/", UserGuideView.as_view(), name="user_guide"),
     path("jsme/", JSMEView.as_view(), name="jsme"),
     path("run_simulation/", run_simulation, name="run_simulation"),
+    path("disclaimer/", DisclaimerGuideView.as_view(), name="disclaimer"),    
+    path("preview-smiles/", preview_smiles, name="preview_smiles"),
     path("download/", download_prediction_csv, name="download_prediction"),
 ]

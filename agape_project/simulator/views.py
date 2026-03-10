@@ -15,6 +15,12 @@ from .forms import SimulationForm
 from .services.csv_utils import robust_csv_reader
 from .services.smiles_utils import canonicalize_smiles
 from .services.predictor import AGAPEPredictor
+from django.http import JsonResponse
+from rdkit import Chem
+from rdkit.Chem import Draw
+import base64
+import io
+
 
 predictor = AGAPEPredictor()
 
@@ -54,6 +60,9 @@ class FAQView(TemplateView):
         context["active_page"] = "FAQ"
         return context
 
+class DisclaimerGuideView(TemplateView):
+    template_name = "simulator/disclaimer.html"
+
 class UserGuideView(TemplateView):
     template_name = "simulator/user_guide.html"
 
@@ -61,6 +70,34 @@ class UserGuideView(TemplateView):
 class JSMEView(TemplateView):
     template_name = "simulator/jsme_embed.html"
 
+
+def preview_smiles(request):
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "error": "POST method required."}, status=405)
+
+    smiles = (request.POST.get("smiles") or "").strip()
+
+    if not smiles:
+        return JsonResponse({"ok": False, "error": "No SMILES provided."}, status=400)
+
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is None:
+        return JsonResponse({"ok": False, "error": "Invalid SMILES."}, status=400)
+
+    try:
+        img = Draw.MolToImage(mol, size=(450, 300))
+        buffer = io.BytesIO()
+        img.save(buffer, format="PNG")
+        image_b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
+
+        return JsonResponse({
+            "ok": True,
+            "image": f"data:image/png;base64,{image_b64}",
+            "canonical_smiles": Chem.MolToSmiles(mol, canonical=True),
+        })
+
+    except Exception as e:
+        return JsonResponse({"ok": False, "error": str(e)}, status=500)
 
 def run_simulation(request):
 
