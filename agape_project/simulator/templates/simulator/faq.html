@@ -16,35 +16,40 @@
     <!-- USER GUIDE LINK -->
     <div class="alert alert-info mb-4">
       📘 Looking for detailed instructions?
-      <a href="{% url 'simulator:user_guide' %}" class="fw-bold">Access the AGAPE User Guide</a>
+      <a href="{% url 'simulator:user_guide' %}" class="fw-bold" target="_blank">Access the AGAPE User Guide</a>
     </div>
 
-    <!-- FAQ ACCORDION -->
     <div class="accordion" id="faqAccordion">
 
       <!-- Question 1 -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingOne">
-          <button class="accordion-button" type="button" data-bs-toggle="collapse"
-                  data-bs-target="#collapseOne" aria-expanded="true"
+          <button class="accordion-button" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseOne"
+                  aria-expanded="true"
                   aria-controls="collapseOne">
             What is AGAPE?
           </button>
         </h2>
+
         <div id="collapseOne" class="accordion-collapse collapse show"
-             aria-labelledby="headingOne" data-bs-parent="#faqAccordion">
+             aria-labelledby="headingOne"
+             data-bs-parent="#faqAccordion">
+
           <div class="accordion-body">
-            AGAPE is a machine-learning-based predictive platform designed to estimate
-            ligand–G-quadruplex affinity using classical and quantum chemical descriptors.
-            It integrates curated molecular features with trained predictive models.
+            AGAPE (computAtional G-quadruplex Affinity PrEdiction) is an AI-based platform designed to predict the ability of small molecules to stabilize G-quadruplex (G4) DNA structures.  
+            The platform uses molecular descriptors computed from chemical structures and applies trained predictive models to classify compounds as <strong>ACTIVE</strong> or <strong>INACTIVE</strong> toward G4 stabilization.
           </div>
+
         </div>
       </div>
 
       <!-- Question 2 -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingTwo">
-          <button class="accordion-button collapsed" type="button"
+          <button class="accordion-button collapsed"
+                  type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapseTwo"
                   aria-expanded="false"
@@ -52,23 +57,31 @@
             What input formats are supported?
           </button>
         </h2>
+
         <div id="collapseTwo" class="accordion-collapse collapse"
              aria-labelledby="headingTwo"
              data-bs-parent="#faqAccordion">
+
           <div class="accordion-body">
-            AGAPE supports:
+
+            AGAPE supports three input methods:
+
             <ul>
-              <li>CSV upload of classical descriptors (AGAPE v1.0)</li>
-              <li>SMILES input with integrated molecule editor (AGAPE v2.0)</li>
+              <li><strong>CSV upload</strong> — upload up to 150 molecules in a single file.</li>
+              <li><strong>Single SMILES input</strong> — paste a SMILES string and preview the molecule before prediction.</li>
+              <li><strong>Molecule editor (JSME)</strong> — draw a structure directly in the browser.</li>
             </ul>
+
           </div>
+
         </div>
       </div>
 
       <!-- Question 3 -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingThree">
-          <button class="accordion-button collapsed" type="button"
+          <button class="accordion-button collapsed"
+                  type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapseThree"
                   aria-expanded="false"
@@ -76,58 +89,114 @@
             Which model should I choose?
           </button>
         </h2>
+
         <div id="collapseThree" class="accordion-collapse collapse"
              aria-labelledby="headingThree"
              data-bs-parent="#faqAccordion">
+
           <div class="accordion-body">
-            <strong>Lightweight Model</strong> (180 features) is faster and recommended
-            for quick evaluation.<br><br>
-            <strong>Comprehensive Model</strong> (489 descriptors) uses the full feature set
-            and may provide improved predictive resolution at the cost of computation time.
+
+            AGAPE currently provides two predictive models:
+
+            <ul>
+              <li>
+                <strong>Deep Neural Network (DNN)</strong> — uses a compact set of
+                <strong>30 molecular descriptors</strong> for fast predictions.
+              </li>
+
+              <li>
+                <strong>Machine Learning Model (XGBoost)</strong> — uses
+                <strong>87 descriptors</strong> and may provide improved predictive performance.
+              </li>
+            </ul>
+
           </div>
+
         </div>
       </div>
 
       <!-- Question 4 -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingFour">
-          <button class="accordion-button collapsed" type="button"
+          <button class="accordion-button collapsed"
+                  type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapseFour"
                   aria-expanded="false"
                   aria-controls="collapseFour">
-            How are classical descriptors generated in AGAPE v2.0?
+            How are molecular descriptors generated?
           </button>
         </h2>
+
         <div id="collapseFour" class="accordion-collapse collapse"
              aria-labelledby="headingFour"
              data-bs-parent="#faqAccordion">
+
           <div class="accordion-body">
-            In AGAPE v2.0, molecular structures are drawn or pasted as SMILES.
-            Classical descriptors are automatically computed from the molecular structure
-            before being passed to the predictive model.
+
+            When users provide molecular structures (SMILES or drawn molecules), AGAPE automatically computes classical molecular descriptors using the <strong>Mordred</strong> library.  
+            These descriptors are then aligned with the feature set required by the selected predictive model.
+
           </div>
+
         </div>
       </div>
 
       <!-- Question 5 -->
       <div class="accordion-item">
         <h2 class="accordion-header" id="headingFive">
-          <button class="accordion-button collapsed" type="button"
+          <button class="accordion-button collapsed"
+                  type="button"
                   data-bs-toggle="collapse"
                   data-bs-target="#collapseFive"
                   aria-expanded="false"
                   aria-controls="collapseFive">
-            Is my uploaded data stored?
+            What dataset was used to train the models?
           </button>
         </h2>
+
         <div id="collapseFive" class="accordion-collapse collapse"
              aria-labelledby="headingFive"
              data-bs-parent="#faqAccordion">
+
           <div class="accordion-body">
-            Uploaded descriptor files are processed for prediction purposes but not stored.
-            Please refer to the Privacy Policy for details on data handling and retention.
+
+            The AGAPE models were trained on a curated dataset of approximately
+            <strong>1140 molecules</strong> with experimentally measured G-quadruplex stabilization data.
+
+            A large initial pool of molecular descriptors was computed and processed through
+            feature selection techniques to build the final predictive models.
+
           </div>
+
+        </div>
+      </div>
+
+      <!-- Question 6 -->
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingSix">
+          <button class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseSix"
+                  aria-expanded="false"
+                  aria-controls="collapseSix">
+            Is my uploaded data stored?
+          </button>
+        </h2>
+
+        <div id="collapseSix" class="accordion-collapse collapse"
+             aria-labelledby="headingSix"
+             data-bs-parent="#faqAccordion">
+
+          <div class="accordion-body">
+
+            Uploaded molecules or descriptor files are processed only for generating prediction results.
+            They are not permanently stored by the platform.  
+            For additional information, please refer to the <strong>Privacy Notice</strong>.
+
+          </div>
+
         </div>
       </div>
 
@@ -135,6 +204,5 @@
 
   </div>
 </section>
-
 
 {% endblock %}
