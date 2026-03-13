@@ -1,5 +1,6 @@
 import pandas as pd
 from pathlib import Path
+import numpy as np
 
 # ----------------------------------------
 # Load median values safely
@@ -34,31 +35,40 @@ def align_and_impute(descriptor_df, feature_list, medians_dict=FEATURE_MEDIANS):
     # Work on a copy
     df = descriptor_df.copy()
 
-    # Keep only relevant features (ignore extra Mordred columns)
-    df = df[[col for col in df.columns if col in feature_list]]
+    # ----------------------------------------
+    # Keep only model features + enforce order
+    # (missing columns automatically become NaN)
+    # ----------------------------------------
 
-    # Add missing features with NaN
-    for feature in feature_list:
-        if feature not in df.columns:
-            df[feature] = pd.NA
+    df = df.reindex(columns=feature_list)
 
-    # Enforce exact model order
-    df = df[feature_list]
+    # ----------------------------------------
+    # Convert everything to numeric safely
+    # ----------------------------------------
 
-    # Convert everything to numeric safely (non-numeric -> NaN)
     df = df.apply(pd.to_numeric, errors="coerce")
+    df = df.replace([np.inf, -np.inf], np.nan)
 
     total_values = df.shape[0] * df.shape[1]
     n_features = df.shape[1]
 
+    # ----------------------------------------
     # per-molecule missing counts BEFORE imputation
+    # ----------------------------------------
+
     per_row_missing = df.isna().sum(axis=1).astype(int).tolist()
     per_row_missing_str = [f"{m}/{n_features}" for m in per_row_missing]
 
-    # Count missing BEFORE imputation (global)
+    # ----------------------------------------
+    # Count missing BEFORE imputation
+    # ----------------------------------------
+
     missing_before = int(df.isna().sum().sum())
 
+    # ----------------------------------------
     # Median imputation
+    # ----------------------------------------
+
     for feature in feature_list:
         median_value = medians_dict.get(feature)
         if median_value is not None:

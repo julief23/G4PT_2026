@@ -63,7 +63,7 @@
                      value="DNN"
                      {% if form.data.modelType == "DNN" or not form.data.modelType %}checked{% endif %}>
               <label class="form-check-label">
-                <strong>Deep Neural Network Model</strong> — 75 selected features
+                <strong>Deep Neural Network Model</strong> — 30 selected features
               </label>
             </div>
 
@@ -74,7 +74,8 @@
                      value="ML"
                      {% if form.data.modelType == "ML" %}checked{% endif %}>
               <label class="form-check-label">
-                <strong>XGboost model - Locked for now</strong> 
+                <strong>XGboost ML model</strong>  — 87 selected features
+              </label>
             </div>
 
             {% if form.errors.modelType %}

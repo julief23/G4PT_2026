@@ -139,10 +139,14 @@ def run_simulation(request):
                         )
                         return render(request, "simulator/simulator.html", {"form": form})
 
-                    if "SMILES" not in df.columns:
+                    cols_lower = [c.lower().strip() for c in df.columns]
+
+                    if "smiles" not in cols_lower:
                         raise ValueError("CSV must contain a 'SMILES' column.")
 
-                    smiles_list = df["SMILES"].astype(str).tolist()
+                    smiles_col = df.columns[cols_lower.index("smiles")]
+
+                    smiles_list = df[smiles_col].astype(str).tolist()
 
                 else:
                     raise ValueError("Invalid input mode.")
@@ -203,7 +207,10 @@ def run_simulation(request):
                     use_precomputed = False
 
                     if input_mode == "csv":
-                        required_features = predictor.feature_names
+                        if model_type.upper() == "DNN":
+                            required_features = predictor.dnn_features
+                        else:
+                            required_features = predictor.xgb_features
                         if all(f in df.columns for f in required_features):
                             use_precomputed = True
 
@@ -211,14 +218,16 @@ def run_simulation(request):
                         descriptor_df = df.loc[
                             [i for i, v in enumerate(validity_flags) if v]
                         ].reset_index(drop=True)
-                        descriptor_df["SMILES"] = valid_smiles_only
                     else:
                         descriptor_df = compute_mordred_from_smiles_list(
                             valid_smiles_only
                         )
 
                     # Predictor now handles alignment + imputation
-                    preds, probs, imputation_percent, per_row_impute = predictor.predict(descriptor_df)
+                    preds, probs, imputation_percent, per_row_impute = predictor.predict(
+                        descriptor_df,
+                        model_type
+                    )
 
                     # Imputation transparency
                     if imputation_percent > 0:
@@ -333,9 +342,6 @@ def download_prediction_csv(request):
 
     results = request.session.get("prediction_results")
     job_name = request.session.get("job_name", "agape_results")
-
-    if not results:
-        return HttpResponse("No prediction results available.", status=400)
 
     # Create CSV in memory
     output = io.StringIO()

@@ -1,3 +1,9 @@
+import numpy as np
+
+# fix for Mordred with numpy >= 1.24
+if not hasattr(np, "float"):
+    np.float = float
+
 from rdkit import Chem
 from mordred import Calculator, descriptors
 import pandas as pd
