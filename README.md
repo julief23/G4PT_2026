@@ -1,5 +1,5 @@
 # AGAPE_2026
-AGAPE web interface
+AGAPE is a cheminformatics platform that uses molecular descriptors and machine learning models to predict whether small molecules can stabilize G-quadruplex DNA structures. Identifying such ligands is important because G-quadruplexes play key regulatory roles in genomic regions associated with cancer and other diseases. By enabling rapid in-silico screening of candidate compounds, AGAPE helps prioritize molecules for experimental validation and supports the discovery of new therapeutic agents.
 
 - Julie FARES
 
