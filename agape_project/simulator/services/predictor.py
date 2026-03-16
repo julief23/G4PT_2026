@@ -5,7 +5,7 @@ import pickle
 from pathlib import Path
 import numpy as np
 
-from .preprocessing import align_and_impute, FEATURE_MEDIANS
+from .preprocessing import align_and_impute
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -34,24 +34,28 @@ class AGAPEPredictor:
         with open(model_dir / "xgb_feature_list.pkl", "rb") as f:
             self.xgb_features = pickle.load(f)
 
+    # ---------------------------------------------------
+    # PREPROCESSING
+    # ---------------------------------------------------
+
     def preprocess(self, descriptor_df: pd.DataFrame, model_type: str):
         """
-        Align features, apply median imputation,
-        scale according to the selected model.
+        Align features, apply saved imputer,
+        and scale according to the selected model.
         """
+
         descriptor_df = descriptor_df.drop(columns=["SMILES"], errors="ignore")
 
         if model_type.upper() == "DNN":
-            feature_list = self.dnn_features
             scaler = self.dnn_scaler
+            model_key = "DNN"
         else:
-            feature_list = self.xgb_features
             scaler = self.xgb_scaler
+            model_key = "ML"
 
         X_clean, imputation_percent, per_row_missing, n_features, per_row_missing_str = align_and_impute(
             descriptor_df,
-            feature_list,
-            FEATURE_MEDIANS
+            model_type=model_key
         )
 
         X_scaled = scaler.transform(X_clean.values)
@@ -59,6 +63,9 @@ class AGAPEPredictor:
         return X_scaled, imputation_percent, per_row_missing_str
 
 
+    # ---------------------------------------------------
+    # PREDICTION
+    # ---------------------------------------------------
 
     def predict(self, descriptor_df: pd.DataFrame, model_type: str):
 
@@ -71,7 +78,9 @@ class AGAPEPredictor:
         print(descriptor_df.iloc[0])
 
         print("MODEL TYPE:", model_type)
-        print("SCALER USED:", "DNN" if model_type.upper()=="DNN" else "XGB")
+        print("SCALER USED:", "DNN" if model_type.upper() == "DNN" else "XGB")
+
+        # -------- DNN --------
         if model_type.upper() == "DNN":
 
             probs = self.dnn_model.predict(X_scaled, verbose=0)
@@ -84,11 +93,11 @@ class AGAPEPredictor:
                 per_row_missing_str
             )
 
-        else:  # XGBoost
+        # -------- XGBoost --------
+        else:
 
             probs = self.xgb_model.predict_proba(X_scaled)[:, 1]
             preds = (probs > 0.5).astype(int)
-
 
             return (
                 preds.flatten(),

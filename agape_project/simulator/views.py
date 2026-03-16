@@ -107,7 +107,7 @@ def run_simulation(request):
         if form.is_valid():
 
             job_name = form.cleaned_data["job_name"]
-            model_type = form.cleaned_data["modelType"]
+            model_type = form.cleaned_data["modelType"]  # DNN or ML
             input_mode = form.cleaned_data["classicalInputType"]
 
             try:
@@ -126,6 +126,7 @@ def run_simulation(request):
                     smiles_list = [smi.strip()]
 
                 elif input_mode == "csv":
+
                     csv_file = form.cleaned_data.get("classicalCsv")
 
                     df = robust_csv_reader(csv_file)
@@ -163,7 +164,9 @@ def run_simulation(request):
                 invalid_smiles = []
 
                 for smi in smiles_list:
+
                     can = canonicalize_smiles(smi)
+
                     if can is None:
                         canonical_smiles.append(None)
                         validity_flags.append(False)
@@ -172,21 +175,21 @@ def run_simulation(request):
                         canonical_smiles.append(can)
                         validity_flags.append(True)
 
-
                 # ------------------------------------------
                 # HARD STOP FOR SINGLE MOLECULE MODE
                 # ------------------------------------------
 
                 if input_mode in ["smiles", "draw"]:
+
                     if not validity_flags[0]:
                         messages.error(
                             request,
                             f"Invalid SMILES structure: {smiles_list[0]}"
                         )
+
                         return render(request, "simulator/simulator.html", {
                             "form": form
                         })
-
 
                 # ------------------------------------------
                 # 3️⃣ HANDLE BATCH LOGIC
@@ -204,40 +207,42 @@ def run_simulation(request):
 
                 if valid_smiles_only:
 
-                    use_precomputed = False
-
                     if input_mode == "csv":
+
                         if model_type.upper() == "DNN":
                             required_features = predictor.dnn_features
                         else:
                             required_features = predictor.xgb_features
+
                         if all(f in df.columns for f in required_features):
                             use_precomputed = True
 
                     if use_precomputed:
+
                         descriptor_df = df.loc[
                             [i for i, v in enumerate(validity_flags) if v]
                         ].reset_index(drop=True)
+
                     else:
+
                         descriptor_df = compute_mordred_from_smiles_list(
                             valid_smiles_only
                         )
 
-                    # Predictor now handles alignment + imputation
                     preds, probs, imputation_percent, per_row_impute = predictor.predict(
                         descriptor_df,
                         model_type
                     )
 
-                    # Imputation transparency
                     if imputation_percent > 0:
                         messages.warning(
                             request,
                             f"{round(imputation_percent,2)}% of descriptor values "
-                            "were missing or invalid and replaced using training medians."
+                            "were missing or invalid and replaced during preprocessing."
                         )
 
                 else:
+
                     preds = []
                     probs = []
                     imputation_percent = 0
@@ -251,13 +256,17 @@ def run_simulation(request):
                 for original_smi, is_valid in zip(smiles_list, validity_flags):
 
                     if not is_valid:
+
                         results.append({
                             "smiles": original_smi,
                             "prediction": "INVALID",
                             "probability": None,
                             "confidence": None,
+                            "imputed_features": None,
                         })
+
                     else:
+
                         prob_active = float(probs[valid_index])
                         pred = preds[valid_index]
 
@@ -276,6 +285,7 @@ def run_simulation(request):
                             "probability_active": round(prob_active, 4),
                             "model_confidence": round(model_confidence, 4),
                             "confidence_level": confidence,
+                            "imputed_features": per_row_impute[valid_index],
                         })
 
                         valid_index += 1
@@ -285,6 +295,7 @@ def run_simulation(request):
                 # ------------------------------------------
 
                 if input_mode == "csv" and invalid_smiles:
+
                     messages.warning(
                         request,
                         f"{len(invalid_smiles)} invalid SMILES detected and skipped."
@@ -295,15 +306,19 @@ def run_simulation(request):
                 # ------------------------------------------
 
                 if len(valid_smiles_only) > 0:
+
                     messages.success(
                         request,
                         f"Prediction completed successfully for {len(valid_smiles_only)} molecule(s)."
                     )
+
                 else:
+
                     messages.error(
                         request,
                         "No valid SMILES found. Prediction was not performed."
                     )
+
                     return render(request, "simulator/simulator.html", {
                         "form": form
                     })
@@ -324,7 +339,9 @@ def run_simulation(request):
                 })
 
             except Exception as e:
+
                 messages.error(request, f"Simulation error: {str(e)}")
+
                 return render(request, "simulator/simulator.html", {
                     "form": form
                 })
@@ -335,8 +352,6 @@ def run_simulation(request):
     return render(request, "simulator/simulator.html", {
         "form": form
     })
-
-
 
 def download_prediction_csv(request):
 
