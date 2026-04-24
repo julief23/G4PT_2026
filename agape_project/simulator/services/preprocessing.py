@@ -29,15 +29,12 @@ def _load_pickle_or_joblib(path):
 # ----------------------------------------
 
 MODEL_CONFIG = {
-    "DNN": {
-        "feature_path": MODEL_DIR / "featuresDNN.pkl",
-        "imputer_path": MODEL_DIR / "imputerDNN.joblib",
-    },
     "ML": {
         "feature_path": MODEL_DIR / "xgb_feature_list.pkl",
         "imputer_path": MODEL_DIR / "xgb_final_imputer.pkl",
     },
 }
+
 # Preload artifacts once
 LOADED_ARTIFACTS = {}
 
@@ -51,7 +48,7 @@ for model_name, cfg in MODEL_CONFIG.items():
 # Alignment + Imputation
 # ----------------------------------------
 
-def align_and_impute(descriptor_df, model_type="DNN"):
+def align_and_impute(descriptor_df, model_type="ML"):
     """
     Align descriptors to the selected model feature space and apply the
     corresponding saved imputer.
@@ -61,7 +58,7 @@ def align_and_impute(descriptor_df, model_type="DNN"):
     descriptor_df : pd.DataFrame
         Raw descriptor dataframe.
     model_type : str
-        "dnn" or "xgb"
+        "ML"
 
     Returns
     -------
@@ -80,7 +77,9 @@ def align_and_impute(descriptor_df, model_type="DNN"):
     model_type = model_type.upper()
 
     if model_type not in LOADED_ARTIFACTS:
-        raise ValueError(f"Unknown model_type '{model_type}'. Expected one of: {list(LOADED_ARTIFACTS.keys())}")
+        raise ValueError(
+            f"Unknown model_type '{model_type}'. Expected one of: {list(LOADED_ARTIFACTS.keys())}"
+        )
 
     feature_list = list(LOADED_ARTIFACTS[model_type]["feature_list"])
     imputer = LOADED_ARTIFACTS[model_type]["imputer"]

@@ -50,22 +50,22 @@
   <div id="main-heading">
     <h2 class="agape-heading lang-en display-5 mt-4">
       <a href="/" id="header-link" style="color: inherit; text-decoration: none;">
-        AGAPE: AI-Powered Affinity Predictor for G4-Binders
+        Deep-AGAPE: AI-Powered Affinity Predictor for G4-Binders
       </a>
     </h2>
     <h2 class="agape-heading lang-fr display-5 mt-4" style="display: none;">
       <a href="/" id="header-link" style="color: inherit; text-decoration: none;">
-        AGAPE : Prédicteur d'affinité des "G4-Binders" alimenté par l'IA
+        Deep-AGAPE : Prédicteur d'affinité des "G4-Binders" alimenté par l'IA
       </a>
     </h2>
     <h2 class="agape-heading lang-it display-5 mt-4" style="display: none;">
       <a href="/" id="header-link" style="color: inherit; text-decoration: none;">
-        AGAPE: Predittore di affinità di "G4-binders" basato sull'IA
+        Deep-AGAPE: Predittore di affinità di "G4-binders" basato sull'IA
       </a>
     </h2>
     <h2 class="agape-heading lang-es display-5 mt-4" style="display: none;">
       <a href="/" id="header-link" style="color: inherit; text-decoration: none;">
-        AGAPE: Predicción de afinidad basada en IA para "G4-binders"
+        Deep-AGAPE: Predicción de afinidad basada en IA para "G4-binders"
       </a>
     </h2>
   </div>
@@ -106,6 +106,41 @@
   <p>Running AGAPE prediction...</p>
 </div>
 
+<script>
+function setCustomLanguage(lang) {
+  const languages = ["en", "fr", "it", "es"];
+
+  languages.forEach(code => {
+    document.querySelectorAll(".lang-" + code).forEach(el => {
+      el.style.display = code === lang ? "" : "none";
+    });
+  });
+}
+
+function getGTranslateLang() {
+  const match = document.cookie.match(/googtrans=\/en\/([a-z]+)/);
+  return match ? match[1] : "en";
+}
+
+function syncCustomLanguage() {
+  const lang = getGTranslateLang();
+
+  if (["en", "fr", "it", "es"].includes(lang)) {
+    setCustomLanguage(lang);
+  } else {
+    setCustomLanguage("en");
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  syncCustomLanguage();
+
+  document.addEventListener("click", function () {
+    setTimeout(syncCustomLanguage, 500);
+    setTimeout(syncCustomLanguage, 1200);
+  });
+});
+</script>
 
 </body>
 </html>
