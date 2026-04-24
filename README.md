@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/agape_v2_logo.png" width="700">
+  <img src="agape_project/assets/agape_v2_logo.png" width="700">
 </p>
 
 # AGAPE_v2
