@@ -36,74 +36,8 @@ AGAPE_2026/
 
 ---
 
-## Requirements
 
-- Python 3.11
-- pip
-- virtual environment support
-
----
-
-## Installation
-
-### 1. Create a virtual environment
-
-```bash
-python3.11 -m venv .venv
-```
-
-or
-
-```bash
-python -m venv .venv
-```
-
-### 2. Activate the virtual environment
-
-Linux / macOS:
-
-```bash
-source .venv/bin/activate
-```
-
-Windows:
-
-```bash
-.venv\Scripts\activate
-```
-
-### 3. Upgrade pip and install dependencies
-
-```bash
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-```
-
----
-
-## Apply migrations
-
-```bash
-cd agape_project
-python manage.py makemigrations
-python manage.py migrate
-```
-
----
-
-## Run the development server
-
-```bash
-python manage.py runserver
-```
-
-Open your browser at:
-
-http://127.0.0.1:8000/
-
----
-
-## Docker deployment
+## Installation - Docker deployment
 
 ### Build the Docker image
 
