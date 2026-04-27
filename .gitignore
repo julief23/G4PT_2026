@@ -1,6 +1,9 @@
 # Virtual environments
 .venv/
 venv/
+env/
+agapenv/
+.env
 
 # Python cache
 __pycache__/
@@ -10,13 +13,11 @@ __pycache__/
 # Django
 db.sqlite3
 media/
+staticfiles/
 
 # VS Code
 .vscode/
 
 # OS
 .DS_Store
-Thumbs.db
-
-# pre-compiled python source
-__pycache__/
+Thumbs.db.env
