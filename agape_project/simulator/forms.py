@@ -64,8 +64,8 @@ class SimulationForm(forms.Form):
                 self.add_error("classicalCsv", "CSV file is empty.")
                 return cleaned_data
 
-            if len(df) > 10000:
-                self.add_error("classicalCsv", "Too many rows (max 10,000).")
+            if len(df) > 152:
+                self.add_error("classicalCsv", "Too many rows (max 152).")
                 return cleaned_data
 
             cols = [c.lower().strip() for c in df.columns]
