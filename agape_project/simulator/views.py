@@ -99,6 +99,7 @@ def preview_smiles(request):
     except Exception as e:
         return JsonResponse({"ok": False, "error": str(e)}, status=500)
 
+
 def run_simulation(request):
 
     if request.method == "POST":
@@ -352,6 +353,31 @@ def run_simulation(request):
     return render(request, "simulator/simulator.html", {
         "form": form
     })
+
+
+def molecule_image(request):
+    smiles = request.GET.get("smiles", "").strip()
+
+    if not smiles:
+        return HttpResponse("Missing SMILES", status=400)
+
+    mol = Chem.MolFromSmiles(smiles)
+
+    if mol is None:
+        return HttpResponse("Invalid SMILES", status=400)
+
+    canonical_smiles = Chem.MolToSmiles(mol, canonical=True)
+
+    canonical_mol = Chem.MolFromSmiles(canonical_smiles)
+
+    img = Draw.MolToImage(canonical_mol, size=(450, 350))
+
+    buffer = io.BytesIO()
+    img.save(buffer, format="PNG")
+    buffer.seek(0)
+
+    return HttpResponse(buffer.getvalue(), content_type="image/png")
+
 
 def download_prediction_csv(request):
 

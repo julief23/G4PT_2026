@@ -10,6 +10,8 @@ from .views import (
     preview_smiles,
     run_simulation,
     download_prediction_csv,
+    molecule_image,
+    
 )
 
 urlpatterns = [
@@ -23,4 +25,5 @@ urlpatterns = [
     path("disclaimer/", DisclaimerGuideView.as_view(), name="disclaimer"),    
     path("preview-smiles/", preview_smiles, name="preview_smiles"),
     path("download/", download_prediction_csv, name="download_prediction"),
+    path("molecule-image/", molecule_image, name="molecule_image"),
 ]

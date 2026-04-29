@@ -73,6 +73,7 @@
               <th>Probability (ACTIVE)</th>
               <th>Confidence</th>
               <th>Imputed features</th>
+              <th>Structure</th>
             </tr>
           </thead>
           <tbody>
@@ -125,6 +126,68 @@
               <td>
                 {% if row.imputed_features %}
                   {{ row.imputed_features }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <!-- See molecule -->
+              <td>
+                {% if row.prediction != "INVALID" %}
+                  <button type="button"
+                          class="btn btn-sm btn-outline-dark molecule-btn"
+                          data-bs-toggle="modal"
+                          data-bs-target="#molModal{{ forloop.counter }}"
+                          data-img-url="{% url 'simulator:molecule_image' %}?smiles={{ row.smiles|urlencode:'' }}"
+                          title="Visualize molecule">
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
+
+                  <div class="modal fade"
+                      id="molModal{{ forloop.counter }}"
+                      tabindex="-1"
+                      aria-hidden="true">
+
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+
+                        <div class="modal-header">
+                          <h5 class="modal-title">Molecule visualization</h5>
+
+                          <button type="button"
+                                  class="btn-close"
+                                  data-bs-dismiss="modal"
+                                  aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body text-center">
+
+                          <img src="{% url 'simulator:molecule_image' %}?smiles={{ row.smiles|urlencode:'' }}"
+                              alt="Molecule structure"
+                              class="img-fluid mb-3"
+                              style="max-height: 350px;">
+
+                          <p class="small text-muted" style="word-break: break-all;">
+                            {{ row.smiles }}
+                          </p>
+
+                          <hr>
+
+                          <p><strong>Prediction:</strong> {{ row.prediction }}</p>
+
+                          {% if row.probability_active is not None %}
+                            <p><strong>Probability ACTIVE:</strong> {{ row.probability_active|floatformat:4 }}</p>
+                          {% endif %}
+
+                          {% if row.confidence_level %}
+                            <p><strong>Confidence:</strong> {{ row.confidence_level }}</p>
+                          {% endif %}
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
                 {% else %}
                   —
                 {% endif %}
