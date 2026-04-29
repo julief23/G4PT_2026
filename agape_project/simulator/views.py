@@ -1,26 +1,45 @@
 from django.views.generic import TemplateView
+from django.shortcuts import render
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.clickjacking import xframe_options_sameorigin
-from django.conf import settings
-from simulator.services.mordred_engine import compute_mordred_from_smiles_list
 from django.contrib import messages
-from django.http import FileResponse, HttpResponse
-from django.shortcuts import render, redirect
-import pandas as pd
-import csv
-import os
-import io
-import mimetypes
+from django.http import HttpResponse
+from django.http import JsonResponse
+
+from simulator.services.mordred_engine import compute_mordred_from_smiles_list
 from .forms import SimulationForm
 from .services.csv_utils import robust_csv_reader
 from .services.smiles_utils import canonicalize_smiles
 from .services.predictor import AGAPEPredictor
-from django.http import JsonResponse
+
 from rdkit import Chem
 from rdkit.Chem import Draw
+
+import csv
 import base64
 import io
+import logging
 
+HIGH_CONFIDENCE_THRESHOLD = 0.85
+MODERATE_CONFIDENCE_THRESHOLD = 0.65
+MAX_CSV_ROWS = 151
+
+MODEL_DNN = "DNN"
+
+INPUT_CSV = "csv"
+INPUT_SMILES = "smiles"
+INPUT_DRAW = "draw"
+
+PRED_ACTIVE = "ACTIVE"
+PRED_INACTIVE = "INACTIVE"
+PRED_INVALID = "INVALID"
+
+CONF_HIGH = "High"
+CONF_MODERATE = "Moderate"
+CONF_LOW = "Low"
+
+logger = logging.getLogger(__name__)
 
 predictor = AGAPEPredictor()
 
@@ -75,7 +94,7 @@ def preview_smiles(request):
     if request.method != "POST":
         return JsonResponse({"ok": False, "error": "POST method required."}, status=405)
 
-    smiles = (request.POST.get("smiles") or "").strip()
+    smiles = (request.POST.get(INPUT_SMILES) or "").strip()
 
     if not smiles:
         return JsonResponse({"ok": False, "error": "No SMILES provided."}, status=400)
@@ -118,21 +137,21 @@ def run_simulation(request):
                 # 1️⃣ EXTRACT INPUT
                 # ------------------------------------------
 
-                if input_mode == "smiles":
-                    smi = form.cleaned_data.get("smiles")
+                if input_mode == INPUT_SMILES:
+                    smi = form.cleaned_data.get(INPUT_SMILES)
                     smiles_list = [smi.strip()]
 
-                elif input_mode == "draw":
-                    smi = form.cleaned_data.get("draw")
+                elif input_mode == INPUT_DRAW:
+                    smi = form.cleaned_data.get(INPUT_DRAW)
                     smiles_list = [smi.strip()]
 
-                elif input_mode == "csv":
+                elif input_mode == INPUT_CSV:
 
                     csv_file = form.cleaned_data.get("classicalCsv")
 
                     df = robust_csv_reader(csv_file)
 
-                    MAX_ROWS = 151
+                    MAX_ROWS = MAX_CSV_ROWS
 
                     if len(df) > MAX_ROWS:
                         messages.error(
@@ -143,10 +162,10 @@ def run_simulation(request):
 
                     cols_lower = [c.lower().strip() for c in df.columns]
 
-                    if "smiles" not in cols_lower:
+                    if INPUT_SMILES not in cols_lower:
                         raise ValueError("CSV must contain a 'SMILES' column.")
 
-                    smiles_col = df.columns[cols_lower.index("smiles")]
+                    smiles_col = df.columns[cols_lower.index(INPUT_SMILES)]
 
                     smiles_list = df[smiles_col].astype(str).tolist()
 
@@ -180,7 +199,7 @@ def run_simulation(request):
                 # HARD STOP FOR SINGLE MOLECULE MODE
                 # ------------------------------------------
 
-                if input_mode in ["smiles", "draw"]:
+                if input_mode in [INPUT_SMILES, INPUT_DRAW]:
 
                     if not validity_flags[0]:
                         messages.error(
@@ -208,9 +227,9 @@ def run_simulation(request):
 
                 if valid_smiles_only:
 
-                    if input_mode == "csv":
+                    if input_mode == INPUT_CSV:
 
-                        if model_type.upper() == "DNN":
+                        if model_type.upper() == MODEL_DNN:
                             required_features = predictor.dnn_features
                         else:
                             required_features = predictor.xgb_features
@@ -260,7 +279,7 @@ def run_simulation(request):
 
                         results.append({
                             "smiles": original_smi,
-                            "prediction": "INVALID",
+                            "prediction": PRED_INVALID,
                             "probability": None,
                             "confidence": None,
                             "imputed_features": None,
@@ -273,16 +292,16 @@ def run_simulation(request):
 
                         model_confidence = max(prob_active, 1 - prob_active)
 
-                        if model_confidence > 0.85:
-                            confidence = "High"
-                        elif model_confidence > 0.65:
-                            confidence = "Moderate"
+                        if model_confidence > HIGH_CONFIDENCE_THRESHOLD:
+                            confidence = CONF_HIGH
+                        elif model_confidence > MODERATE_CONFIDENCE_THRESHOLD:
+                            confidence = CONF_MODERATE
                         else:
-                            confidence = "Low"
+                            confidence = CONF_LOW
 
                         results.append({
                             "smiles": original_smi,
-                            "prediction": "ACTIVE" if pred == 1 else "INACTIVE",
+                            "prediction": PRED_ACTIVE if pred == 1 else PRED_INACTIVE,
                             "probability_active": round(prob_active, 4),
                             "model_confidence": round(model_confidence, 4),
                             "confidence_level": confidence,
@@ -295,7 +314,7 @@ def run_simulation(request):
                 # 5️⃣ WARN ABOUT INVALID SMILES
                 # ------------------------------------------
 
-                if input_mode == "csv" and invalid_smiles:
+                if input_mode == INPUT_CSV and invalid_smiles:
 
                     messages.warning(
                         request,
@@ -340,6 +359,8 @@ def run_simulation(request):
                 })
 
             except Exception as e:
+
+                logger.exception("Prediction failed")
 
                 messages.error(request, f"Simulation error: {str(e)}")
 

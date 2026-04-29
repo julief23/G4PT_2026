@@ -8,7 +8,9 @@ import numpy as np
 from .preprocessing import align_and_impute
 
 BASE_DIR = Path(__file__).resolve().parent
-
+PRED_THRESHOLD = 0.5
+MODEL_DNN = "DNN"
+MODEL_XGB = "ML"
 
 class AGAPEPredictor:
 
@@ -19,10 +21,10 @@ class AGAPEPredictor:
         # -------- DNN --------
         self.dnn_folds = []
 
-        with open(model_dir / "DNN" / "featuresDNN.pkl", "rb") as f:
+        with open(model_dir / MODEL_DNN / "featuresDNN.pkl", "rb") as f:
             self.dnn_features = pickle.load(f)
 
-        dnn_dir = model_dir / "DNN"
+        dnn_dir = model_dir / MODEL_DNN
 
         for i in range(1, 11):
             fold_dir = dnn_dir / f"fold_{i}"
@@ -58,7 +60,7 @@ class AGAPEPredictor:
         descriptor_df = descriptor_df.drop(columns=["SMILES"], errors="ignore")
 
         # -------- DNN --------
-        if model_type.upper() == "DNN":
+        if model_type.upper() == MODEL_DNN:
 
             feature_list = list(self.dnn_features)
 
@@ -86,7 +88,7 @@ class AGAPEPredictor:
 
             X_clean, imputation_percent, _, _, per_row_missing_str = align_and_impute(
                 descriptor_df,
-                model_type="ML"
+                model_type=MODEL_XGB
             )
 
             X_scaled = self.xgb_scaler.transform(X_clean.values)
@@ -99,13 +101,8 @@ class AGAPEPredictor:
 
     def predict(self, descriptor_df: pd.DataFrame, model_type: str):
 
-        print("FIRST ROW DESCRIPTORS:")
-        print(descriptor_df.iloc[0])
-
-        print("MODEL TYPE:", model_type)
-
         # -------- DNN --------
-        if model_type.upper() == "DNN":
+        if model_type.upper() == MODEL_DNN:
 
             X_raw, imputation_percent, per_row_missing_str = self.preprocess(
                 descriptor_df,
@@ -121,7 +118,7 @@ class AGAPEPredictor:
                 fold_probs.append(probs)
 
             probs = np.mean(np.vstack(fold_probs), axis=0)
-            preds = (probs > 0.5).astype(int)
+            preds = (probs > PRED_THRESHOLD).astype(int)
 
             return (
                 preds.flatten(),
@@ -139,7 +136,7 @@ class AGAPEPredictor:
             )
 
             probs = self.xgb_model.predict_proba(X_scaled)[:, 1]
-            preds = (probs > 0.5).astype(int)
+            preds = (probs > PRED_THRESHOLD).astype(int)
 
             return (
                 preds.flatten(),
