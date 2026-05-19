@@ -43,6 +43,12 @@ AGAPE_2026/
 
 ## Installation - Docker deployment
 
+### Docker and compose Versions
+
+Docker Engine version: 26.1.3
+
+docker-compose version: 1.25.0
+
 ### Build the Docker image
 
 ```bash
