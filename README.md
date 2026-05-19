@@ -45,9 +45,9 @@ AGAPE_2026/
 
 ### Docker and compose Versions
 
-Docker Engine version: 26.1.3
+Docker Engine version: `26.1.3`
 
-docker-compose version: 1.25.0
+docker-compose version: `1.25.0`
 
 ### Build the Docker image
 
