@@ -41,7 +41,13 @@ CONF_LOW = "Low"
 
 logger = logging.getLogger(__name__)
 
-predictor = AGAPEPredictor()
+predictor = None
+
+def get_predictor():
+    global predictor
+    if predictor is None:
+        predictor = AGAPEPredictor()
+    return predictor
 
 class SimulatorView(TemplateView):
     template_name = "simulator/simulator.html"
@@ -230,8 +236,10 @@ def run_simulation(request):
                     if input_mode == INPUT_CSV:
 
                         if model_type.upper() == MODEL_DNN:
+                            predictor = get_predictor()
                             required_features = predictor.dnn_features
                         else:
+                            predictor = get_predictor()
                             required_features = predictor.xgb_features
 
                         if all(f in df.columns for f in required_features):
@@ -248,6 +256,8 @@ def run_simulation(request):
                         descriptor_df = compute_mordred_from_smiles_list(
                             valid_smiles_only
                         )
+
+                    predictor = get_predictor()
 
                     preds, probs, imputation_percent, per_row_impute = predictor.predict(
                         descriptor_df,

@@ -69,12 +69,21 @@ http://localhost:8000/
 
 ## Environment variables
 
+## First-time setup
+
+Before running the application, create a `.env` file in the project root:
 Create a `.env` file based on `.env.example`:
 
 ```env
 DJANGO_SECRET_KEY=replace-with-a-secure-key
 DJANGO_DEBUG=False
 DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
+```
+
+You can generate a secret key with:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(50))"
 ```
 
 ---
@@ -92,3 +101,7 @@ DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
 - Static files are collected automatically during Docker build.
 - The Conda environment is defined in `environment.yml`.
 - For production deployment, replace `DJANGO_ALLOWED_HOSTS` with your server IP or domain name.
+
+## Citation
+
+If you use AGAPE in academic work, please cite
