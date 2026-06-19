@@ -14,11 +14,6 @@
           novalidate>
       {% csrf_token %}
 
-      <div class="alert alert-warning">
-        ⚠️ Classical descriptors are computed using Mordred (open source).
-        Please ensure that your input format matches the template.
-      </div>
-
       <!-- Job Name -->
       <div class="card mb-4 shadow-sm">
         <div class="card-header bg-light">
@@ -103,46 +98,12 @@
       <!-- Classical Descriptors -->
       <div class="card mb-4 shadow-sm">
 
-        <div class="card-header bg-light d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">Classical Descriptors</h5>
-          <button class="btn btn-outline-primary"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  data-bs-target="#csvUploadCollapse">
-            ▲
-          </button>
-        </div>
 
         <div id="csvUploadCollapse" class="collapse show">
           <div class="card-body">
 
             <!-- Input Mode -->
             <div class="mb-4">
-
-              <div class="form-check">
-                <input class="form-check-input"
-                       type="radio"
-                       name="classicalInputType"
-                       id="csvMode"
-                       value="csv"
-                       {% if form.data.classicalInputType == "csv" or not form.data.classicalInputType %}checked{% endif %}>
-                <label class="form-check-label">
-                  <strong>Use CSV upload (AGAPE v1.0)</strong>
-                  <span class="badge bg-success ms-2">Batch Mode</span>
-                </label>
-              </div>
-
-              <div class="form-check">
-                <input class="form-check-input"
-                       type="radio"
-                       name="classicalInputType"
-                       id="smilesMode"
-                       value="smiles"
-                       {% if form.data.classicalInputType == "smiles" %}checked{% endif %}>
-                <label class="form-check-label">
-                  <strong>Single SMILES Input (AGAPE v2.0)</strong>
-                </label>
-              </div>
 
               <div class="form-check">
                 <input class="form-check-input"
@@ -156,66 +117,8 @@
                 </label>
               </div>
 
-              {% if form.errors.classicalInputType %}
-                <div class="text-danger mt-2">
-                  {{ form.errors.classicalInputType.0 }}
-                </div>
-              {% endif %}
-            </div>
-
-            <!-- CSV Block -->
-            <div id="csvBlock">
-             
-              {% if form.errors.classicalCsv %}
-                <div class="text-danger mt-2">
-                  {{ form.errors.classicalCsv.0 }}
-                </div>
-              {% endif %}
-
-                <div class="agape_csv mb-2 d-flex align-items-center">
-                  <img src="/static/frontend/images/csv_logo.png" style="height: 20px; margin-right: 8px;" alt="CSV Icon" />
-                  <a target="_blank" href="/static/frontend/Documents/mordred_descriptors_output_example.csv">
-                    <u><strong style="color: var(--text-color);">CSV Template with Classical Molecular Descriptors</strong></u>
-                  </a>
-                </div>
-
-              <div class="alert alert-info">
-                Upload a CSV file containing a MAXIMUM of 150:
-                <ul class="mb-0">
-                  <li>SMILES column only (descriptors auto-computed)</li>
-                  <li>SMILES + precomputed Mordred descriptors</li>
-                </ul>
-              </div>
-
-              <input type="file"
-                     class="form-control"
-                     name="classicalCsv"
-                     id="csvInput"
-                     accept=".csv">
-
-            </div>
-
-            <!-- SMILES Block -->
-            <div id="smilesBlock" style="display:none;">
-
-              {% if form.errors.smiles %}
-                <div class="text-danger mt-2">
-                  {{ form.errors.smiles.0 }}
-                </div>
-              {% endif %}
-
-              <div class="alert alert-info">
-                Enter a single SMILES string.
-              </div>
-
-              <input type="text"
-                     class="form-control"
-                     name="smiles"
-                     id="smilesInput"
-                     value="{{ form.data.smiles|default:'' }}">
 
 
-            </div>
 
             <!-- Draw Block -->
 
@@ -277,6 +180,44 @@
           </div>
         </div>
       </div>
+</div>
+<!-- G4PT Chat Assistant -->
+<div class="card mb-4 shadow-sm g4pt-chat-card">
+  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">G4PT Assistant</h5>
+    <span class="badge bg-primary">LLM-powered</span>
+  </div>
+
+  <div class="card-body">
+
+    <div class="g4pt-chat-window" id="g4ptChatWindow">
+      <div class="g4pt-message assistant">
+        <div class="g4pt-bubble">
+          Hello, I am G4PT. Describe the type of G4-stabilizing molecule you would like to generate, or provide a SMILES string, a molecule name, or chemical constraints.
+        </div>
+      </div>
+    </div>
+
+    <div class="g4pt-chat-input mt-3">
+      <textarea
+        class="form-control"
+        id="g4ptUserPrompt"
+        name="g4pt_prompt"
+        rows="3"
+        placeholder="Example: Generate molecules similar to pyridostatin with better drug-like properties..."
+      ></textarea>
+
+      <div class="d-flex justify-content-end mt-2">
+        <button type="button" class="btn btn-primary" id="g4ptSendButton">
+          Ask G4PT
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
 
       <div class="text-center">
         <button class="btn btn-primary" type="submit">
@@ -328,162 +269,37 @@
 document.addEventListener("DOMContentLoaded", () => {
 
   const form = document.querySelector('form[action*="run_simulation"]');
-
-  const csvMode = document.getElementById("csvMode");
-  const smilesMode = document.getElementById("smilesMode");
   const drawMode = document.getElementById("drawMode");
-
-  const csvBlock = document.getElementById("csvBlock");
-  const smilesBlock = document.getElementById("smilesBlock");
   const drawBlock = document.getElementById("drawBlock");
-
-  const smilesInput = document.getElementById("smilesInput");
-
-  const modalElement = document.getElementById("smilesPreviewModal");
-  const previewModal = new bootstrap.Modal(modalElement);
-
-  const previewImage = document.getElementById("smilesPreviewImage");
-  const canonicalSmilesText = document.getElementById("canonicalSmilesText");
-  const previewError = document.getElementById("smilesPreviewError");
-  const confirmButton = document.getElementById("confirmSmilesSubmit");
-
   const overlay = document.getElementById("loading-overlay");
 
-  let confirmedSubmit = false;
-
   /* ----------------------------- */
-  /* Input Mode Toggle */
+  /* Draw Mode Display */
   /* ----------------------------- */
 
   function updateMode() {
-
-    const isCsv = csvMode.checked;
-    const isSmiles = smilesMode.checked;
-    const isDraw = drawMode.checked;
-
-    csvBlock.style.display = isCsv ? "block" : "none";
-    smilesBlock.style.display = isSmiles ? "block" : "none";
-    drawBlock.style.display = isDraw ? "block" : "none";
+    if (drawMode && drawBlock) {
+      drawBlock.style.display = drawMode.checked ? "block" : "none";
+    }
   }
 
-  csvMode.addEventListener("change", updateMode);
-  smilesMode.addEventListener("change", updateMode);
-  drawMode.addEventListener("change", updateMode);
+  if (drawMode) {
+    drawMode.addEventListener("change", updateMode);
+  }
 
   updateMode();
-
-  /* ----------------------------- */
-  /* CSRF Helper */
-  /* ----------------------------- */
-
-  function getCsrfToken() {
-    const csrfInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
-    return csrfInput ? csrfInput.value : "";
-  }
-
-  /* ----------------------------- */
-  /* Fetch RDKit Preview */
-  /* ----------------------------- */
-
-  async function fetchSmilesPreview(smiles) {
-
-    const body = new URLSearchParams();
-    body.append("smiles", smiles);
-    body.append("csrfmiddlewaretoken", getCsrfToken());
-
-    const response = await fetch("{% url 'simulator:preview_smiles' %}", {
-      method: "POST",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest",
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
-      },
-      body: body.toString()
-    });
-
-    return response.json();
-  }
 
   /* ----------------------------- */
   /* Form Submission Logic */
   /* ----------------------------- */
 
-  form.addEventListener("submit", async function(event) {
-
-    if (confirmedSubmit) {
-      return;
-    }
-
-    /* CSV or DRAW mode → run immediately */
-    if (!smilesMode.checked) {
-
+  if (form) {
+    form.addEventListener("submit", function () {
       if (overlay) {
         overlay.style.display = "flex";
       }
-
-      return;
-    }
-
-    event.preventDefault();
-
-    const smiles = (smilesInput.value || "").trim();
-
-    if (!smiles) {
-      smilesInput.focus();
-      return;
-    }
-
-    previewError.classList.add("d-none");
-    previewError.textContent = "";
-    previewImage.src = "";
-    canonicalSmilesText.textContent = "";
-
-    try {
-
-      const data = await fetchSmilesPreview(smiles);
-
-      /* Invalid SMILES → let backend handle */
-      if (!data.ok) {
-
-        confirmedSubmit = true;
-        form.submit();
-        return;
-      }
-
-      previewImage.src = data.image;
-      canonicalSmilesText.textContent = data.canonical_smiles || "";
-
-      previewModal.show();
-
-    } catch (error) {
-
-      previewError.textContent = "Unexpected error while generating preview.";
-      previewError.classList.remove("d-none");
-
-      previewModal.show();
-    }
-  });
-
-  /* ----------------------------- */
-  /* Confirm Button Logic */
-  /* ----------------------------- */
-
-  confirmButton.addEventListener("click", function() {
-
-    confirmedSubmit = true;
-
-    previewModal.hide();
-
-    modalElement.addEventListener("hidden.bs.modal", function() {
-
-      if (overlay) {
-        overlay.style.display = "flex";
-      }
-
-      form.submit();
-
-    }, { once: true });
-
-  });
+    });
+  }
 
 });
 
@@ -515,6 +331,41 @@ document.addEventListener("DOMContentLoaded", function () {
     firstError.scrollIntoView({ block: "center" });
   }
 
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const chatWindow = document.getElementById("g4ptChatWindow");
+  const promptInput = document.getElementById("g4ptUserPrompt");
+  const sendButton = document.getElementById("g4ptSendButton");
+
+  function addMessage(text, sender) {
+    const message = document.createElement("div");
+    message.className = `g4pt-message ${sender}`;
+
+    const bubble = document.createElement("div");
+    bubble.className = "g4pt-bubble";
+    bubble.textContent = text;
+
+    message.appendChild(bubble);
+    chatWindow.appendChild(message);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
+
+  sendButton.addEventListener("click", function () {
+    const prompt = promptInput.value.trim();
+
+    if (!prompt) {
+      promptInput.focus();
+      return;
+    }
+
+    addMessage(prompt, "user");
+    promptInput.value = "";
+
+    addMessage("Your request has been received. The Qwen model will use this prompt to extract constraints and guide molecular generation.", "assistant");
+  });
 });
 </script>
 

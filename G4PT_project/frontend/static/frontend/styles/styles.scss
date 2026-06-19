@@ -416,3 +416,110 @@ html {
 }
 
 
+.g4pt-chat-card {
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--card-color);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+  .card-header {
+    background: transparent;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 1rem 1.25rem;
+
+    h5 {
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .g4pt-chat-window {
+    min-height: 300px;
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 16px;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 10px;
+    }
+  }
+
+  .g4pt-message {
+    display: flex;
+    margin-bottom: 1rem;
+
+    &.assistant {
+      justify-content: flex-start;
+
+      .g4pt-bubble {
+        background: white;
+        color: var(--text-color);
+        border-radius: 18px 18px 18px 6px;
+      }
+    }
+
+    &.user {
+      justify-content: flex-end;
+
+      .g4pt-bubble {
+        background: var(--bs-primary);
+        color: white;
+        border-radius: 18px 18px 6px 18px;
+      }
+    }
+  }
+
+  .g4pt-bubble {
+    max-width: 80%;
+    padding: 0.9rem 1.1rem;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    transition: all 0.2s ease;
+    word-wrap: break-word;
+  }
+
+  .g4pt-chat-input {
+    margin-top: 1rem;
+
+    textarea {
+      resize: none;
+      border-radius: 16px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      padding: 0.9rem 1rem;
+      min-height: 80px;
+      transition: all 0.2s ease;
+
+      &:focus {
+        box-shadow: 0 0 0 0.2rem rgba(var(--bs-primary-rgb), 0.15);
+      }
+    }
+
+    .btn {
+      margin-top: 0.75rem;
+      border-radius: 999px;
+      padding: 0.6rem 1.4rem;
+      font-weight: 500;
+    }
+  }
+}
+
