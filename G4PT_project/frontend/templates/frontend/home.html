@@ -1,0 +1,123 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+{% block title %}G4PT - Home{% endblock %}
+
+{% block content %}
+ 
+<!-- About Section -->
+<section class="section sec2 about active py-3" id="about">
+  <div class="container">
+    <h2 class="text-start mb-2">About the <span class="lang-es notranslate" translate="no" style="display:none;">G4PT</span> Model</h2>
+
+    <div class="row justify-content-center">
+      <div class="col-10 col-md-8 text-center">
+        <img
+          src="{% static 'frontend/images/G4PT_python.png' %}"
+          alt="G4PT Model Diagram"
+          class="img-fluid agape-img mb-2"
+        />
+      </div>
+    </div>
+
+<div class="row justify-content-center">
+  <div class="col-11 col-md-10 abstract-text">
+
+    <h3>
+      <span class="lang-en notranslate" translate="no">What is G4PT?</span>
+      <span class="lang-fr notranslate" translate="no" style="display:none;">Qu’est-ce que G4PT ?</span>
+      <span class="lang-it notranslate" translate="no" style="display:none;">Che cos’è G4PT?</span>
+      <span class="lang-es notranslate" translate="no" style="display:none;">¿Qué es G4PT?</span>
+    </h3>
+
+    <div class="lang-en notranslate" translate="no">
+      <p>
+        G4PT (G-Quadruplex Prediction and Generation Tool) is an AI-powered molecular design platform that combines large language models (LLMs), generative chemistry, and machine learning to accelerate the discovery of G-quadruplex (G4)-stabilizing compounds. G4s, prevalent in telomeres and oncogene promoters, are promising therapeutic targets, but the identification of selective ligands remains a major challenge in medicinal chemistry.
+      </p>
+      <p>
+        Built upon the AGAPE framework and a curated dataset of experimentally characterized compounds, G4PT enables users to interact with the platform using natural language prompts, molecule names, or SMILES representations. The system automatically extracts molecular constraints, identifies reference molecules through cheminformatics databases, and leverages a fine-tuned MolGPT generative model to design novel candidate compounds that satisfy user-defined requirements.
+      </p>
+      <p>
+        Generated molecules undergo multiple validation and filtering stages, including RDKit structural verification, physicochemical property assessment, and reliability checks. The validated compounds are subsequently evaluated by AGAPE, which predicts their probability of stabilizing G4 structures using machine learning models trained on experimentally validated G4 ligands.
+      </p>
+      <p>
+        Candidate molecules are ranked according to their predicted G4-stabilization potential and relevant molecular properties before being presented to the user. An iterative feedback loop allows researchers to refine their design objectives and generate improved compounds through successive rounds of optimization.
+      </p>
+      <p>
+        By integrating natural language interaction, molecular generation, cheminformatics validation, and predictive modeling into a unified workflow, G4PT provides a robust and interpretable platform for AI-assisted discovery of novel G4-targeting molecules and highlights the value of combining chemical expertise with modern generative AI approaches.
+      </p>
+    </div>
+
+    <div class="lang-fr notranslate" translate="no" style="display:none;">
+      <p>
+        G4PT (G-Quadruplex Prediction and Generation Tool) est une plateforme de conception moléculaire assistée par intelligence artificielle qui combine les grands modèles de langage (LLMs), la chimie générative et le machine learning afin d’accélérer la découverte de composés capables de stabiliser les G-quadruplexes (G4s). Les G4s, présents dans les télomères et les promoteurs d’oncogènes, constituent des cibles thérapeutiques prometteuses, mais l’identification de ligands sélectifs demeure un défi majeur en chimie médicinale.
+      </p>
+      <p>
+        Basé sur le framework AGAPE et un ensemble de données curé de composés caractérisés expérimentalement, G4PT permet aux utilisateurs d’interagir avec la plateforme à l’aide d’instructions en langage naturel, de noms de molécules ou de représentations SMILES. Le système extrait automatiquement les contraintes moléculaires, identifie des molécules de référence à partir de bases de données de chimioinformatique et utilise un modèle génératif MolGPT finement ajusté pour concevoir de nouvelles molécules répondant aux critères définis par l’utilisateur.
+      </p>
+      <p>
+        Les molécules générées sont soumises à plusieurs étapes de validation et de filtrage, incluant la vérification structurale via RDKit, l’évaluation des propriétés physicochimiques et des contrôles de fiabilité. Les candidats validés sont ensuite évalués par AGAPE, qui prédit leur probabilité de stabiliser les structures G4 à l’aide de modèles de machine learning entraînés sur des ligands G4 validés expérimentalement.
+      </p>
+      <p>
+        Les molécules candidates sont classées selon leur potentiel prédit de stabilisation des G4s ainsi que leurs propriétés moléculaires pertinentes avant d’être présentées à l’utilisateur. Une boucle itérative de rétroaction permet aux chercheurs d’affiner leurs objectifs de conception et de générer progressivement des composés optimisés.
+      </p>
+      <p>
+        En intégrant l’interaction en langage naturel, la génération moléculaire, la validation chimioinformatique et la modélisation prédictive au sein d’un même workflow, G4PT constitue une plateforme robuste et interprétable pour la découverte assistée par IA de nouvelles molécules ciblant les G-quadruplexes et illustre l’intérêt de combiner expertise chimique et intelligence artificielle générative.
+      </p>
+    </div>
+
+    <div class="lang-it notranslate" translate="no" style="display:none;">
+      <p>
+        G4PT (G-Quadruplex Prediction and Generation Tool) è una piattaforma di progettazione molecolare basata sull'intelligenza artificiale che combina modelli linguistici di grandi dimensioni (LLM), chimica generativa e machine learning per accelerare la scoperta di composti in grado di stabilizzare i G-quadruplexes (G4s). I G4s, presenti nei telomeri e nei promotori degli oncogeni, rappresentano promettenti bersagli terapeutici, ma l'identificazione di ligandi selettivi rimane una sfida significativa nella chimica farmaceutica.
+      </p>
+      <p>
+        Basata sul framework AGAPE e su un dataset curato di composti caratterizzati sperimentalmente, G4PT consente agli utenti di interagire con la piattaforma utilizzando richieste in linguaggio naturale, nomi di molecole o rappresentazioni SMILES. Il sistema estrae automaticamente i vincoli molecolari, identifica molecole di riferimento attraverso database di chemioinformatica e sfrutta un modello generativo MolGPT opportunamente addestrato per progettare nuove molecole conformi ai requisiti definiti dall’utente.
+      </p>
+      <p>
+        I composti generati vengono sottoposti a diverse fasi di validazione e filtraggio, inclusa la verifica strutturale mediante RDKit, la valutazione delle proprietà fisico-chimiche e controlli di affidabilità. Le molecole validate vengono successivamente analizzate da AGAPE, che stima la probabilità di stabilizzazione delle strutture G4 utilizzando modelli di machine learning addestrati su ligandi G4 validati sperimentalmente.
+      </p>
+      <p>
+        I candidati vengono classificati in base al loro potenziale previsto di stabilizzazione dei G4 e ad altre proprietà molecolari rilevanti prima di essere presentati all’utente. Un ciclo iterativo di feedback permette ai ricercatori di perfezionare gli obiettivi di progettazione e generare progressivamente composti ottimizzati.
+      </p>
+      <p>
+        Integrando interazione in linguaggio naturale, generazione molecolare, validazione chemioinformatica e modellazione predittiva in un unico workflow, G4PT fornisce una piattaforma robusta e interpretabile per la scoperta assistita dall’intelligenza artificiale di nuove molecole mirate ai G-quadruplexes e dimostra il valore della combinazione tra competenze chimiche e AI generativa.
+      </p>
+    </div>
+
+    <div class="lang-es notranslate" translate="no" style="display:none;">
+      <p>
+        G4PT (G-Quadruplex Prediction and Generation Tool) es una plataforma de diseño molecular impulsada por inteligencia artificial que combina grandes modelos de lenguaje (LLMs), química generativa y machine learning para acelerar el descubrimiento de compuestos capaces de estabilizar estructuras G-quadruplex (G4s). Los G4s, presentes en los telómeros y promotores de oncogenes, representan objetivos terapéuticos prometedores, aunque la identificación de ligandos selectivos continúa siendo un desafío importante en química medicinal.
+      </p>
+      <p>
+        Basado en el framework AGAPE y en un conjunto de datos curado de compuestos caracterizados experimentalmente, G4PT permite a los usuarios interactuar con la plataforma mediante instrucciones en lenguaje natural, nombres de moléculas o representaciones SMILES. El sistema extrae automáticamente las restricciones moleculares, identifica moléculas de referencia a través de bases de datos de quimioinformática y utiliza un modelo generativo MolGPT ajustado específicamente para diseñar nuevas moléculas que satisfagan los requisitos definidos por el usuario.
+      </p>
+      <p>
+        Los compuestos generados pasan por múltiples etapas de validación y filtrado, incluyendo verificación estructural mediante RDKit, evaluación de propiedades fisicoquímicas y controles de fiabilidad. Posteriormente, las moléculas validadas son evaluadas por AGAPE, que predice su probabilidad de estabilizar estructuras G4 utilizando modelos de machine learning entrenados con ligandos G4 validados experimentalmente.
+      </p>
+      <p>
+        Las moléculas candidatas se clasifican según su potencial previsto de estabilización de G4 y otras propiedades moleculares relevantes antes de presentarse al usuario. Un ciclo iterativo de retroalimentación permite a los investigadores refinar sus objetivos de diseño y generar compuestos mejorados de manera progresiva.
+      </p>
+      <p>
+        Al integrar interacción en lenguaje natural, generación molecular, validación quimioinformática y modelización predictiva en un flujo de trabajo unificado, G4PT proporciona una plataforma robusta e interpretable para el descubrimiento asistido por inteligencia artificial de nuevas moléculas dirigidas a G-quadruplexes y destaca el valor de combinar el conocimiento químico con enfoques modernos de IA generativa.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+  </div>
+</section>
+
+<script>
+function setCustomLanguage(lang) {
+  const languages = ["en", "fr", "it", "es"];
+
+  languages.forEach(code => {
+    document.querySelectorAll(`.lang-${code}`).forEach(el => {
+      el.style.display = code === lang ? "" : "none";
+    });
+  });
+}
+</script>
+
+{% endblock %}
+

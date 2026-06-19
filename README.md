@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="agape_project/assets/agape_v2_logo.png" width="700">
+  <img src="G4PT_project/assets/agape_v2_logo.png" width="700">
 </p>
 
 # AGAPE_v2
@@ -18,7 +18,7 @@ Django-based web application for AGAPE: AI-Powered Affinity Predictor for G4-Bin
 
 ```text
 AGAPE_2026/
-├── agape_project/
+├── G4PT_project/
 │   ├── manage.py
 │   ├── config/
 │   │   ├── __init__.py

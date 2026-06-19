@@ -7,7 +7,7 @@ RUN mamba env create -f environment.yml && mamba clean -afy
 
 COPY . .
 
-WORKDIR /app/agape_project
+WORKDIR /app/G4PT_project
 
 RUN /opt/conda/envs/agapenv/bin/python manage.py collectstatic --noinput
 

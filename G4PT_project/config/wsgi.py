@@ -1,5 +1,5 @@
 """
-WSGI config for agape_project project.
+WSGI config for G4PT_project project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

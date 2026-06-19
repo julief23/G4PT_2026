@@ -1,5 +1,5 @@
 """
-ASGI config for agape_project project.
+ASGI config for G4PT_project project.
 
 It exposes the ASGI callable as a module-level variable named ``application``.
 
