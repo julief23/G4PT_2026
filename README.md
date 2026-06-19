@@ -1,23 +1,22 @@
 <p align="center">
-  <img src="G4PT_project/assets/agape_v2_logo.png" width="700">
+  <img src="G4PT_project/frontend/static/frontend/images/G4PT_python.png" width="700">
 </p>
 
-# AGAPE_v2
-
-AGAPE is a cheminformatics platform that uses molecular descriptors and machine learning models to predict whether small molecules can stabilize G-quadruplex DNA structures. Identifying such ligands is important because G-quadruplexes play key regulatory roles in genomic regions associated with cancer and other diseases. By enabling rapid in silico screening of candidate compounds, AGAPE helps prioritize molecules for experimental validation and supports the discovery of new therapeutic agents.
+# G4PT_V1
+G4PT is an AI-powered cheminformatics platform that combines molecular generation, validation, and machine learning models to design and prioritize small molecules with potential G-quadruplex DNA-stabilizing activity. By integrating user-defined constraints, generative models, and AGAPE-based prediction, G4PT supports the rapid in silico exploration of candidate ligands and helps guide experimental validation for the discovery of new therapeutic agents.
 
 - Julie FARES
 
 ---
 
-Django-based web application for AGAPE: AI-Powered Affinity Predictor for G4-Binders.
+Django-based web application for G4PT: AI-Powered Generative Model for G4-Binders.
 
 ---
 
 ## Project structure
 
 ```text
-AGAPE_2026/
+G4PT_2026/
 ├── G4PT_project/
 │   ├── manage.py
 │   ├── config/
@@ -104,4 +103,4 @@ python -c "import secrets; print(secrets.token_urlsafe(50))"
 
 ## Citation
 
-If you use AGAPE in academic work, please cite
+If you use G4PT in academic work, please cite
