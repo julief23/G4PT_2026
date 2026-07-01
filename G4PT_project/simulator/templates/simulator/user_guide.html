@@ -1,317 +1,200 @@
 {% extends "frontend/base.html" %}
 {% load static %}
-{% block title %}AGAPE - User Guide{% endblock %}
+{% block title %}G4PT - User Guide{% endblock %}
 
 {% block content %}
 
 <section class="section sec3 py-5">
   <div class="container">
 
-    <h2 class="mb-4">AGAPE User Guide</h2>
+    <h2 class="mb-4">G4PT User Guide</h2>
 
-    <!-- Introduction -->
     <div class="card mb-4 shadow-sm">
       <div class="card-header bg-light">
         <h5 class="mb-0">1. Introduction</h5>
       </div>
 
       <div class="card-body">
-
         <p>
-          <strong>AGAPE</strong> (computAtional G-quadruplex stAbilization PrEdiction) is a machine-learning and deep-learning based
-          platform designed to predict the potential of small molecules to bind and stabilize
-          <strong>G-quadruplex (G4)</strong> DNA structures.
+          <strong>G4PT</strong> is an AI-assisted platform designed to generate and prioritize novel
+          <strong>G-quadruplex (G4)</strong> ligand candidates.
         </p>
 
         <p>
-          G-quadruplexes are non-canonical DNA secondary structures commonly found in
-          telomeric regions and oncogene promoters. These structures are increasingly
-          investigated as promising therapeutic targets in cancer and neurological diseases.
-          However, identifying selective G4 ligands remains challenging.
+          Unlike AGAPE, which focuses on predicting G4 ligand activity, G4PT focuses on
+          <strong>molecular generation</strong>. AGAPE is used internally as a ranking module to help
+          prioritize generated molecules.
         </p>
 
         <p>
-          AGAPE was trained on a curated dataset of <strong>1140 molecules</strong> evaluated through
-          <strong>FRET melting assays</strong>. Each molecule is represented by
-          <strong>1613 molecular descriptors</strong> capturing structural, physicochemical,
-          and topological properties relevant to G-quadruplex recognition.
+          The platform combines natural language interpretation, MolGPT-based molecular generation,
+          RDKit validation and filtering, descriptor calculation, AGAPE prediction, ranking, and CSV export.
         </p>
-
-        <p>
-          The platform integrates automated molecular preprocessing, descriptor computation,
-          feature selection, and machine learning prediction through a user-friendly interface
-          supporting both single-molecule and batch predictions.
-        </p>
-
       </div>
     </div>
 
-
-    <!-- Running a Simulation -->
     <div class="card mb-4 shadow-sm">
-
       <div class="card-header bg-light">
-        <h5 class="mb-0">2. Running a Prediction</h5>
+        <h5 class="mb-0">2. Running a Generation Job</h5>
       </div>
 
       <div class="card-body">
-
         <h6><strong>Step 1 — Enter a Job Name</strong></h6>
         <p>
-          Provide a descriptive name for your prediction run. This name will be used
-          to label the output files and results.
+          Provide a short descriptive name for your generation run. This helps identify the output files and results.
         </p>
 
-
-        <h6><strong>Step 2 — Select a Prediction Model</strong></h6>
+        <h6><strong>Step 2 — Choose an Input Strategy</strong></h6>
+        <p>
+          G4PT provides two mutually exclusive input strategies:
+        </p>
 
         <ul>
           <li>
-            <strong>Deep Neural Network (DNN)</strong>  
-            Uses <strong>30 selected molecular descriptors</strong>.
-            This model is optimized for fast predictions and captures
-            complex nonlinear relationships between descriptors.
+            <strong>Structured input</strong> — manually select the generation mode and provide the required reference input.
           </li>
-
           <li>
-            <strong>Machine Learning Model (XGboost)</strong>  
-            Uses <strong>87 selected molecular descriptors</strong>.
-            This model provides a more comprehensive representation
-            of molecular features and may improve predictive performance
-            for complex compounds.
+            <strong>G4PT Assistant</strong> — describe your request in natural language. Qwen converts the request into structured constraints.
           </li>
         </ul>
-
-
-        <h6><strong>Step 3 — Choose an Input Method</strong></h6>
 
         <div class="alert alert-info">
-          AGAPE supports three molecular input methods.
+          Only one input strategy can be used at a time to avoid contradictory instructions.
         </div>
-
-<ul>
-
-  <li>
-    <strong>CSV Upload (Batch Mode)</strong>
-    <ul>
-      <li>• Upload a CSV file containing up to <strong>150 molecules</strong>.</li>
-      <li>• Recommended for large-scale screening experiments.</li>
-    </ul>
-  </li>
-
-  <li>
-    <strong>Single SMILES Input</strong>
-    <ul>
-      <li>• Paste a single SMILES string.</li>
-      <li>• If valid, a molecular preview is generated.</li>
-      <li>• The user can confirm the interpreted structure before launching the prediction.</li>
-    </ul>
-  </li>
-
-  <li>
-    <strong>Molecular Editor (JSME)</strong>
-    <ul>
-      <li>• Draw a molecule using the integrated JSME editor.</li>
-      <li>• The drawn structure is automatically converted into a SMILES string.</li>
-      <li>• This SMILES representation is used to compute descriptors and run the prediction.</li>
-    </ul>
-  </li>
-
-</ul>
-
       </div>
     </div>
 
-
-    <!-- CSV Format -->
     <div class="card mb-4 shadow-sm">
       <div class="card-header bg-light">
-        <h5 class="mb-0">3. CSV Input Format</h5>
+        <h5 class="mb-0">3. Structured Input</h5>
       </div>
 
       <div class="card-body">
-
-        <div class="alert alert-warning">
-          The uploaded CSV file must follow one of the supported formats.
-        </div>
-
-
-        <h6><strong>Option A — SMILES Only</strong></h6>
-
-        <p>The CSV file must contain a column named:</p>
-
-        <div class="bg-light p-2 rounded mb-3">
-          <code>SMILES</code>
-        </div>
-
-        <p>
-          AGAPE will automatically compute the required molecular descriptors
-          using the <strong>Mordred descriptor calculator</strong>.
-        </p>
-
-
-        <h6><strong>Option B — Precomputed Descriptors</strong></h6>
-
-        <p>
-        Users may also upload precomputed Mordred descriptors. 
-        If the required descriptors are present and correctly formatted, they will be used directly by the model. 
-        Otherwise, the descriptors will be automatically recomputed from the provided SMILES using Mordred.
-        </p>
-
-      </div>
-    </div>
-
-
-    <!-- Internal Workflow -->
-    <div class="card mb-4 shadow-sm">
-
-      <div class="card-header bg-light">
-        <h5 class="mb-0">4. Internal Prediction Workflow</h5>
-      </div>
-
-      <div class="card-body">
-
-        <p>
-          After submission, AGAPE performs the following automated steps:
-        </p>
-
-        <ol>
-          <li>• SMILES validation and structure parsing</li>
-          <li>• SMILES canonicalization</li>
-          <li>• Molecular descriptor computation using Mordred (if required)</li>
-          <li>• Feature alignment with the trained model descriptors</li>
-          <li>• Prediction using the selected machine learning model</li>
-        </ol>
-
-        <div class="alert alert-info mb-0">
-          Invalid or unparsable molecules are automatically detected and reported.
-        </div>
-
-      </div>
-    </div>
-
-
-    <!-- Results -->
-    <div class="card mb-4 shadow-sm">
-
-      <div class="card-header bg-light">
-        <h5 class="mb-0">5. Interpreting the Results</h5>
-      </div>
-
-      <div class="card-body">
-
-        <h6><strong>Prediction Label</strong></h6>
+        <h6><strong>Generation Modes</strong></h6>
 
         <ul>
-          <li><strong>ACTIVE</strong> — predicted to stabilize G-quadruplex structures</li>
-          <li><strong>INACTIVE</strong> — predicted not to stabilize G-quadruplex structures</li>
+          <li><strong>De Novo Generation</strong> — generate novel G4-like ligands without a reference molecule.</li>
+          <li><strong>Similar Ligand Generation</strong> — generate analogues of a known ligand.</li>
+          <li><strong>Scaffold Extension</strong> — grow a scaffold into a complete candidate molecule.</li>
+          <li><strong>Scaffold Hopping</strong> — generate chemically related molecules with alternative scaffolds.</li>
         </ul>
 
-
-        <h6 class="mt-3"><strong>Probability Score</strong></h6>
+        <h6 class="mt-3"><strong>Reference Input</strong></h6>
 
         <p>
-          The model outputs a probability between <strong>0 and 1</strong>
-          representing the confidence of the prediction.
+          Depending on the selected generation mode, the user may provide one reference input.
         </p>
 
         <ul>
-          <li>Values close to <strong>1</strong> indicate strong confidence in an ACTIVE prediction.</li>
-          <li>Values close to <strong>0</strong> indicate strong confidence in an INACTIVE prediction.</li>
-          <li>Values around <strong>0.5</strong> indicate uncertain predictions.</li>
+          <li><strong>No reference</strong> — recommended for de novo generation.</li>
+          <li><strong>Ligand name</strong> — resolved into a molecular structure when possible.</li>
+          <li><strong>SMILES</strong> — validated and canonicalized before generation.</li>
+          <li><strong>Molecular editor</strong> — draw a structure directly in the browser.</li>
         </ul>
 
         <div class="alert alert-warning mb-0">
-          A low probability (e.g. 0.12) does not indicate a weak prediction.
-          It indicates strong confidence that the compound is predicted
-          to be inactive.
-        </div>
-<br>
-
-<div class="card mb-4 shadow-sm">
-  <div class="card-header bg-light">
-    <h5 class="mb-0">Confidence Interpretation</h5>
-  </div>
-  <div class="card-body">
-
-    <p>
-      The model outputs a probability between <strong>0</strong> and <strong>1</strong>
-      corresponding to the likelihood that a molecule is predicted to be <strong>ACTIVE</strong>.
-    </p>
-
-    <div class="my-4">
-      <div style="
-        height: 22px;
-        border-radius: 999px;
-        background: linear-gradient(to right, #13681a 0%, #ffa826 25%, #ad0a0a 50%, #ffa826 75%, #13681a 100%);
-      "></div>
-
-      <div style="display: flex; justify-content: space-between; font-size: 0.9rem; margin-top: 8px;">
-        <span>0.0</span>
-        <span>0.2</span>
-        <span>0.4</span>
-        <span>0.6</span>
-        <span>0.8</span>
-        <span>1.0</span>
-      </div>
-    </div>
-
-    <div class="row text-center mt-4">
-      <div class="col-md-4 mb-3">
-        <div class="p-3 border rounded h-100">
-          <h6 class="mb-2"><strong>INACTIVE prediction</strong></h6>
-          <p class="mb-1">Probabilities close to <strong>0</strong></p>
-          <p class="mb-0 text-muted">High confidence in an inactive compound</p>
-        </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <div class="p-3 border rounded h-100">
-          <h6 class="mb-2"><strong>Uncertain region</strong></h6>
-          <p class="mb-1">Probabilities around <strong>0.5</strong></p>
-          <p class="mb-0 text-muted">Lower confidence prediction</p>
-        </div>
-      </div>
-
-      <div class="col-md-4 mb-3">
-        <div class="p-3 border rounded h-100">
-          <h6 class="mb-2"><strong>ACTIVE prediction</strong></h6>
-          <p class="mb-1">Probabilities close to <strong>1</strong></p>
-          <p class="mb-0 text-muted">High confidence in an active compound</p>
+          Use only one reference input method at a time: ligand name, SMILES, or molecular editor.
         </div>
       </div>
     </div>
 
-    <div class="alert alert-info mt-3 mb-0">
-      Confidence increases as the predicted probability moves away from 0.5 and approaches either 0 or 1.
-    </div>
-
-  </div>
-</div>
-
-      </div>
-    </div>
-
-
-    <!-- Download -->
     <div class="card mb-4 shadow-sm">
-
       <div class="card-header bg-light">
-        <h5 class="mb-0">6. Exporting Results</h5>
+        <h5 class="mb-0">4. G4PT Assistant</h5>
       </div>
 
       <div class="card-body">
+        <p>
+          The G4PT Assistant uses Qwen to interpret natural language requests and extract structured molecular constraints.
+        </p>
 
         <p>
-          After the prediction completes, results can be downloaded using
-          the <strong>"Download Results (CSV)"</strong> button.
+          Example instructions:
+        </p>
+
+        <ul>
+          <li>Generate lighter analogues of pyridostatin.</li>
+          <li>Generate diverse G4-like ligands with improved synthetic accessibility.</li>
+          <li>Extend this scaffold into complete candidate molecules.</li>
+          <li>Generate scaffold-hopped analogues of BRACO-19.</li>
+        </ul>
+
+        <div class="alert alert-info mb-0">
+          Qwen does not generate molecules directly. It prepares structured instructions that guide the MolGPT generation workflow.
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">5. Internal Workflow</h5>
+      </div>
+
+      <div class="card-body">
+        <p>
+          After submission, G4PT performs the following automated steps:
+        </p>
+
+        <ol>
+          <li>Input interpretation or structured input parsing</li>
+          <li>Ligand name, SMILES, or scaffold resolution</li>
+          <li>SMILES validation and canonicalization using RDKit</li>
+          <li>Molecular generation using MolGPT</li>
+          <li>RDKit validation and duplicate removal</li>
+          <li>Descriptor calculation</li>
+          <li>AGAPE prediction</li>
+          <li>Ranking of generated candidates</li>
+          <li>Results display and CSV export</li>
+        </ol>
+
+        <div class="alert alert-info mb-0">
+          Invalid or unparsable generated molecules are automatically removed before ranking.
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">6. Results</h5>
+      </div>
+
+      <div class="card-body">
+        <p>
+          G4PT displays ranked generated molecules and associated molecular information.
+        </p>
+
+        <ul>
+          <li><strong>Rank</strong> — candidate position after filtering and prioritization.</li>
+          <li><strong>Structure</strong> — molecular structure preview.</li>
+          <li><strong>SMILES</strong> — canonical molecular representation.</li>
+          <li><strong>AGAPE score</strong> — predicted G4 activity score.</li>
+          <li><strong>MW</strong> — molecular weight.</li>
+          <li><strong>LogP</strong> — estimated lipophilicity.</li>
+          <li><strong>SA score</strong> — synthetic accessibility estimate.</li>
+          <li><strong>Similarity</strong> — similarity to the reference molecule when relevant.</li>
+          <li><strong>Generation mode</strong> — mode used to generate the candidate.</li>
+        </ul>
+
+        <div class="alert alert-warning mb-0">
+          Generated molecules are computational suggestions. They should be validated with additional computational and experimental methods.
+        </div>
+      </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm">
+      <div class="card-header bg-light">
+        <h5 class="mb-0">7. Exporting Results</h5>
+      </div>
+
+      <div class="card-body">
+        <p>
+          After generation and ranking, results can be downloaded as a <strong>CSV file</strong>.
         </p>
 
         <p class="mb-0">
-          The exported file contains the original SMILES string,
-          prediction label, and associated probability score.
+          The exported file contains generated molecules, scores, molecular properties, generation mode,
+          and relevant filtering information.
         </p>
-
       </div>
     </div>
 

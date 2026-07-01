@@ -96,6 +96,12 @@ class JSMEView(TemplateView):
     template_name = "simulator/jsme_embed.html"
 
 
+
+
+def run_simulation(request):
+    return JsonResponse({"status": "temporarily disabled"})
+
+
 def preview_smiles(request):
     if request.method != "POST":
         return JsonResponse({"ok": False, "error": "POST method required."}, status=405)

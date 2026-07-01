@@ -8,6 +8,7 @@ from .views import (
     UserGuideView,
     DisclaimerGuideView,
     preview_smiles,
+    run_simulation,
 
 )
 
