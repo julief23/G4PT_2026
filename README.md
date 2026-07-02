@@ -26,7 +26,7 @@ G4PT_2026/
 │   │   ├── asgi.py
 │   │   └── wsgi.py
 │   │
-│   ├── simulator/
+│   ├── generator/
 │   └── frontend/
 │
 ├── Dockerfile
@@ -90,7 +90,7 @@ python -c "import secrets; print(secrets.token_urlsafe(50))"
 ## Applications
 
 - **frontend**: landing page and navigation
-- **simulator**: run a prediction, display results, contact us, FAQ
+- **generator**: run a generation, display results, contact us, FAQ
 
 ---
 
