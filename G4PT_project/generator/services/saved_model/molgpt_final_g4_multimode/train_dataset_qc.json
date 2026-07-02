@@ -1,0 +1,34 @@
+{
+  "dataset_name": "Stage 2 experimentally validated actives TRAIN",
+  "total_input_smiles": 388,
+  "total_valid_rows": 388,
+  "total_instruction_examples": 2622,
+  "mode_counts": {
+    "DE_NOVO": 388,
+    "EXTEND": 388,
+    "ANALOGUE": 1164,
+    "HOP": 682
+  },
+  "analogue_pair_summary": {
+    "total_pairs": 1164,
+    "mean_similarity": 0.6470599817214727,
+    "min_similarity": 0.125,
+    "max_similarity": 1.0
+  },
+  "hop_pair_summary": {
+    "hop_min_similarity": 0.35,
+    "total_candidate_molecules": 388,
+    "molecules_with_at_least_one_valid_hop_pair": 349,
+    "molecules_with_at_least_one_valid_hop_pair_fraction": 0.8994845360824743,
+    "molecules_skipped": 39,
+    "molecules_skipped_fraction": 0.10051546391752578,
+    "total_hop_examples": 965,
+    "mean_tanimoto_similarity": 0.6381540230941223,
+    "min_tanimoto_similarity": 0.35,
+    "max_tanimoto_similarity": 1.0,
+    "unique_scaffolds_full_set": 257,
+    "unique_source_scaffolds_hop_pairs": 223,
+    "unique_target_scaffolds_hop_pairs": 205,
+    "scaffold_diversity_ratio": 0.7976653696498055
+  }
+}

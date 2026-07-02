@@ -1,0 +1,193 @@
+{
+  "run_config": {
+    "date": "2026-07-01T13:36:42.076135",
+    "model_name": "jonghyunlee/MolGPT_long_context_pretrained-by-ZINC15",
+    "inferred_csv": "../data/agape_inferred_actives.csv",
+    "experimental_csv": "../data/experimental_actives.csv",
+    "smiles_column": "canonical_smiles",
+    "output_stage1": "./molgpt_stage1_inferred_multimode",
+    "output_final": "./molgpt_final_g4_multimode",
+    "max_length": 192,
+    "seed": 42,
+    "test_size": 0.15,
+    "stage1_lr": 5e-05,
+    "stage1_epochs": 3,
+    "stage2_lr": 5e-06,
+    "stage2_epochs": 4,
+    "batch_size": 1,
+    "gradient_accumulation_steps": 8,
+    "n_analogue_neighbors": 3,
+    "n_hop_neighbors": 3,
+    "hop_min_similarity": 0.35,
+    "generation_modes": [
+      "DE_NOVO",
+      "ANALOGUE",
+      "EXTEND",
+      "HOP"
+    ],
+    "torch_version": "2.12.1+cu130",
+    "cuda_available": true,
+    "git_commit": null,
+    "git_dirty": null,
+    "dataset_sizes": {
+      "inferred_after_canonicalization_and_overlap_removal": 25728,
+      "experimental_after_canonicalization": 456
+    }
+  },
+  "stage1": {
+    "train_qc": {
+      "dataset_name": "Stage 1 high-confidence AGAPE-inferred actives TRAIN",
+      "total_input_smiles": 21869,
+      "total_valid_rows": 21869,
+      "total_instruction_examples": 149895,
+      "mode_counts": {
+        "DE_NOVO": 21869,
+        "EXTEND": 21782,
+        "ANALOGUE": 65607,
+        "HOP": 40637
+      },
+      "analogue_pair_summary": {
+        "total_pairs": 65607,
+        "mean_similarity": 0.6909035312430883,
+        "min_similarity": 0.11428571428571428,
+        "max_similarity": 1.0
+      },
+      "hop_pair_summary": {
+        "hop_min_similarity": 0.35,
+        "total_candidate_molecules": 21869,
+        "molecules_with_at_least_one_valid_hop_pair": 19591,
+        "molecules_with_at_least_one_valid_hop_pair_fraction": 0.8958342859755819,
+        "molecules_skipped": 2278,
+        "molecules_skipped_fraction": 0.10416571402441813,
+        "total_hop_examples": 55711,
+        "mean_tanimoto_similarity": 0.6940939072471992,
+        "min_tanimoto_similarity": 0.35,
+        "max_tanimoto_similarity": 1.0,
+        "unique_scaffolds_full_set": 13598,
+        "unique_source_scaffolds_hop_pairs": 11889,
+        "unique_target_scaffolds_hop_pairs": 10446,
+        "scaffold_diversity_ratio": 0.7682012060597146
+      }
+    },
+    "eval_qc": {
+      "dataset_name": "Stage 1 high-confidence AGAPE-inferred actives EVAL",
+      "total_input_smiles": 3859,
+      "total_valid_rows": 3859,
+      "total_instruction_examples": 25807,
+      "mode_counts": {
+        "DE_NOVO": 3859,
+        "EXTEND": 3842,
+        "ANALOGUE": 11577,
+        "HOP": 6529
+      },
+      "analogue_pair_summary": {
+        "total_pairs": 11577,
+        "mean_similarity": 0.527687076206148,
+        "min_similarity": 0.1,
+        "max_similarity": 1.0
+      },
+      "hop_pair_summary": {
+        "hop_min_similarity": 0.35,
+        "total_candidate_molecules": 3859,
+        "molecules_with_at_least_one_valid_hop_pair": 2933,
+        "molecules_with_at_least_one_valid_hop_pair_fraction": 0.7600414615185281,
+        "molecules_skipped": 926,
+        "molecules_skipped_fraction": 0.2399585384814719,
+        "total_hop_examples": 7783,
+        "mean_tanimoto_similarity": 0.6061262247499796,
+        "min_tanimoto_similarity": 0.35,
+        "max_tanimoto_similarity": 1.0,
+        "unique_scaffolds_full_set": 3064,
+        "unique_source_scaffolds_hop_pairs": 2271,
+        "unique_target_scaffolds_hop_pairs": 2017,
+        "scaffold_diversity_ratio": 0.658289817232376
+      }
+    },
+    "split_qc": {
+      "train_smiles_count": 21869,
+      "eval_smiles_count": 3859,
+      "train_unique_scaffolds": 13597,
+      "eval_unique_scaffolds": 3064,
+      "shared_scaffolds_train_eval": 1175,
+      "eval_scaffold_overlap_fraction": 0.3834856396866841
+    }
+  },
+  "stage2": {
+    "train_qc": {
+      "dataset_name": "Stage 2 experimentally validated actives TRAIN",
+      "total_input_smiles": 388,
+      "total_valid_rows": 388,
+      "total_instruction_examples": 2622,
+      "mode_counts": {
+        "DE_NOVO": 388,
+        "EXTEND": 388,
+        "ANALOGUE": 1164,
+        "HOP": 682
+      },
+      "analogue_pair_summary": {
+        "total_pairs": 1164,
+        "mean_similarity": 0.6470599817214727,
+        "min_similarity": 0.125,
+        "max_similarity": 1.0
+      },
+      "hop_pair_summary": {
+        "hop_min_similarity": 0.35,
+        "total_candidate_molecules": 388,
+        "molecules_with_at_least_one_valid_hop_pair": 349,
+        "molecules_with_at_least_one_valid_hop_pair_fraction": 0.8994845360824743,
+        "molecules_skipped": 39,
+        "molecules_skipped_fraction": 0.10051546391752578,
+        "total_hop_examples": 965,
+        "mean_tanimoto_similarity": 0.6381540230941223,
+        "min_tanimoto_similarity": 0.35,
+        "max_tanimoto_similarity": 1.0,
+        "unique_scaffolds_full_set": 257,
+        "unique_source_scaffolds_hop_pairs": 223,
+        "unique_target_scaffolds_hop_pairs": 205,
+        "scaffold_diversity_ratio": 0.7976653696498055
+      }
+    },
+    "eval_qc": {
+      "dataset_name": "Stage 2 experimentally validated actives EVAL",
+      "total_input_smiles": 68,
+      "total_valid_rows": 68,
+      "total_instruction_examples": 421,
+      "mode_counts": {
+        "DE_NOVO": 68,
+        "EXTEND": 68,
+        "ANALOGUE": 204,
+        "HOP": 81
+      },
+      "analogue_pair_summary": {
+        "total_pairs": 204,
+        "mean_similarity": 0.43708316875498765,
+        "min_similarity": 0.10714285714285714,
+        "max_similarity": 1.0
+      },
+      "hop_pair_summary": {
+        "hop_min_similarity": 0.35,
+        "total_candidate_molecules": 68,
+        "molecules_with_at_least_one_valid_hop_pair": 38,
+        "molecules_with_at_least_one_valid_hop_pair_fraction": 0.5588235294117647,
+        "molecules_skipped": 30,
+        "molecules_skipped_fraction": 0.4411764705882353,
+        "total_hop_examples": 82,
+        "mean_tanimoto_similarity": 0.5930491431696221,
+        "min_tanimoto_similarity": 0.37142857142857144,
+        "max_tanimoto_similarity": 0.98,
+        "unique_scaffolds_full_set": 61,
+        "unique_source_scaffolds_hop_pairs": 37,
+        "unique_target_scaffolds_hop_pairs": 34,
+        "scaffold_diversity_ratio": 0.5573770491803278
+      }
+    },
+    "split_qc": {
+      "train_smiles_count": 388,
+      "eval_smiles_count": 68,
+      "train_unique_scaffolds": 257,
+      "eval_unique_scaffolds": 61,
+      "shared_scaffolds_train_eval": 18,
+      "eval_scaffold_overlap_fraction": 0.29508196721311475
+    }
+  }
+}

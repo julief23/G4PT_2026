@@ -1,0 +1,210 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+{% block title %}AGAPE - Results{% endblock %}
+
+{% block content %}
+
+<section class="section sec4 results py-5" id="results">
+  <div class="container">
+
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="alert 
+                    {% if message.tags == 'success' %}
+                        alert-success
+                    {% elif message.tags == 'error' %}
+                        alert-danger
+                    {% elif message.tags == 'warning' %}
+                        alert-warning
+                    {% else %}
+                        alert-info
+                    {% endif %}
+                    alert-dismissible fade show"
+            role="alert">
+
+          {{ message }}
+
+          <button type="button"
+            class="btn-close"
+            data-bs-dismiss="alert"
+            aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+
+
+    {% if results %}
+  
+
+    <h2 class="text-left mb-2">Summary</h2>
+
+    <a href="{% url 'simulator:download_prediction' %}" 
+       class="btn btn-outline-primary mb-3">
+      Download Results (CSV)
+    </a>
+
+      <div class="mb-4 p-3"
+           style="border: 1px solid var(--primary-color);
+                  border-radius: 10px;
+                  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+                  background-color: var(--section-bg-color);">
+        <p><strong>Model Used:</strong> {{ model_used|default:"—" }}</p>
+        <p><strong>Descriptors:</strong> {{ descriptors_used|default:"—" }}</p>
+      </div>
+    {% endif %}
+
+  </div>
+
+  <div class="container">
+    <h2 class="text-left mb-4">Prediction Results</h2>
+
+    <div class="results-table-container">
+
+      {% if results %}
+        <table class="results-table table table-bordered text-center align-middle">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>SMILES</th>
+              <th>Prediction</th>
+              <th>Probability (ACTIVE)</th>
+              <th>Confidence</th>
+              <th>Imputed features</th>
+              <th>Structure</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            {% for row in results %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td style="word-break: break-all;">{{ row.smiles }}</td>
+
+              <!-- Prediction -->
+              <td>
+                {% if row.prediction == "ACTIVE" %}
+                  <span class="badge bg-success">ACTIVE</span>
+                {% elif row.prediction == "INACTIVE" %}
+                  <span class="badge bg-danger">INACTIVE</span>
+                {% elif row.prediction == "INVALID" %}
+                  <span class="badge bg-secondary">INVALID</span>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <!-- Probability -->
+              <td>
+                {% if row.probability_active is not None %}
+                  {{ row.probability_active|floatformat:4 }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <!-- Confidence -->
+              <td>
+                {% if row.confidence_level %}
+                  {% if row.confidence_level == "High" %}
+                    <span class="badge bg-success">High</span>
+                  {% elif row.confidence_level == "Moderate" %}
+                    <span class="badge bg-warning text-dark">Moderate</span>
+                  {% elif row.confidence_level == "Low" %}
+                    <span class="badge bg-danger">Low</span>
+                  {% else %}
+                    —
+                  {% endif %}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <!-- Imputed features -->
+              <td>
+                {% if row.imputed_features %}
+                  {{ row.imputed_features }}
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+              <!-- See molecule -->
+              <td>
+                {% if row.prediction != "INVALID" %}
+                  <button type="button"
+                          class="btn btn-sm btn-outline-dark molecule-btn"
+                          data-bs-toggle="modal"
+                          data-bs-target="#molModal{{ forloop.counter }}"
+                          data-img-url="{% url 'simulator:molecule_image' %}?smiles={{ row.smiles|urlencode:'' }}"
+                          title="Visualize molecule">
+                    <i class="bi bi-eye-fill"></i>
+                  </button>
+
+                  <div class="modal fade"
+                      id="molModal{{ forloop.counter }}"
+                      tabindex="-1"
+                      aria-hidden="true">
+
+                    <div class="modal-dialog modal-dialog-centered">
+                      <div class="modal-content">
+
+                        <div class="modal-header">
+                          <h5 class="modal-title">Molecule visualization</h5>
+
+                          <button type="button"
+                                  class="btn-close"
+                                  data-bs-dismiss="modal"
+                                  aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body text-center">
+
+                          <img src="{% url 'simulator:molecule_image' %}?smiles={{ row.smiles|urlencode:'' }}"
+                              alt="Molecule structure"
+                              class="img-fluid mb-3"
+                              style="max-height: 350px;">
+
+                          <p class="small text-muted" style="word-break: break-all;">
+                            {{ row.smiles }}
+                          </p>
+
+                          <hr>
+
+                          <p><strong>Prediction:</strong> {{ row.prediction }}</p>
+
+                          {% if row.probability_active is not None %}
+                            <p><strong>Probability ACTIVE:</strong> {{ row.probability_active|floatformat:4 }}</p>
+                          {% endif %}
+
+                          {% if row.confidence_level %}
+                            <p><strong>Confidence:</strong> {{ row.confidence_level }}</p>
+                          {% endif %}
+
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                {% else %}
+                  —
+                {% endif %}
+              </td>
+
+            </tr>
+            {% endfor %}
+
+          </tbody>
+        </table>
+      {% else %}
+        <p>No results available.</p>
+      {% endif %}
+
+    </div>
+  </div>
+
+</section>
+
+{% endblock %}

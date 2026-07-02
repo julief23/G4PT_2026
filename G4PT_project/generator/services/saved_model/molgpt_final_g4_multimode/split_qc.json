@@ -1,0 +1,8 @@
+{
+  "train_smiles_count": 388,
+  "eval_smiles_count": 68,
+  "train_unique_scaffolds": 257,
+  "eval_unique_scaffolds": 61,
+  "shared_scaffolds_train_eval": 18,
+  "eval_scaffold_overlap_fraction": 0.29508196721311475
+}

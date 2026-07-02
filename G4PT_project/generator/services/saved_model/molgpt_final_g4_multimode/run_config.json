@@ -1,0 +1,40 @@
+{
+  "date": "2026-07-01T13:36:42.076135",
+  "model_name": "jonghyunlee/MolGPT_long_context_pretrained-by-ZINC15",
+  "inferred_csv": "../data/agape_inferred_actives.csv",
+  "experimental_csv": "../data/experimental_actives.csv",
+  "smiles_column": "canonical_smiles",
+  "output_stage1": "./molgpt_stage1_inferred_multimode",
+  "output_final": "./molgpt_final_g4_multimode",
+  "max_length": 192,
+  "seed": 42,
+  "test_size": 0.15,
+  "stage1_lr": 5e-05,
+  "stage1_epochs": 3,
+  "stage2_lr": 5e-06,
+  "stage2_epochs": 4,
+  "batch_size": 1,
+  "gradient_accumulation_steps": 8,
+  "n_analogue_neighbors": 3,
+  "n_hop_neighbors": 3,
+  "hop_min_similarity": 0.35,
+  "generation_modes": [
+    "DE_NOVO",
+    "ANALOGUE",
+    "EXTEND",
+    "HOP"
+  ],
+  "torch_version": "2.12.1+cu130",
+  "cuda_available": true,
+  "git_commit": null,
+  "git_dirty": null,
+  "dataset_sizes": {
+    "inferred_after_canonicalization_and_overlap_removal": 25728,
+    "experimental_after_canonicalization": 456
+  },
+  "stage_output_dir": "./molgpt_final_g4_multimode",
+  "learning_rate": 5e-06,
+  "num_train_epochs": 4,
+  "train_examples": 2622,
+  "eval_examples": 421
+}

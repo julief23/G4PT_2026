@@ -1,0 +1,253 @@
+{% extends "frontend/base.html" %}
+{% load static %}
+{% block title %}G4PT - FAQ{% endblock %}
+
+{% block content %}
+
+<section class="section py-5">
+  <div class="container">
+
+    <h2 class="mb-4">Frequently Asked Questions</h2>
+
+    <p class="mb-4 text-muted">
+      Find answers to common questions about using the G4PT molecular generation platform.
+    </p>
+
+    <div class="alert alert-info mb-4">
+      📘 Looking for detailed instructions?
+      <a href="{% url 'simulator:user_guide' %}" class="fw-bold" target="_blank">Access the G4PT User Guide</a>
+    </div>
+
+    <div class="accordion" id="faqAccordion">
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingOne">
+          <button class="accordion-button" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseOne"
+                  aria-expanded="true"
+                  aria-controls="collapseOne">
+            What is G4PT?
+          </button>
+        </h2>
+
+        <div id="collapseOne" class="accordion-collapse collapse show"
+             aria-labelledby="headingOne"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            G4PT is an AI-assisted platform for generating and prioritizing novel G-quadruplex ligands.
+            It combines natural language interpretation, MolGPT-based molecular generation, RDKit validation,
+            and AGAPE-based ranking to return candidate molecules for further analysis.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTwo">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseTwo"
+                  aria-expanded="false"
+                  aria-controls="collapseTwo">
+            How is G4PT different from AGAPE?
+          </button>
+        </h2>
+
+        <div id="collapseTwo" class="accordion-collapse collapse"
+             aria-labelledby="headingTwo"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            AGAPE is mainly a predictive platform: it estimates whether a molecule is likely to stabilize G4 structures.
+            G4PT focuses on molecular generation. AGAPE is used internally as a ranking module to prioritize generated candidates.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingThree">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseThree"
+                  aria-expanded="false"
+                  aria-controls="collapseThree">
+            What generation modes are supported?
+          </button>
+        </h2>
+
+        <div id="collapseThree" class="accordion-collapse collapse"
+             aria-labelledby="headingThree"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            G4PT supports four generation modes:
+            <ul>
+              <li><strong>De novo generation</strong> — generate novel G4-like ligands without a reference molecule.</li>
+              <li><strong>Similar ligand generation</strong> — generate analogues of a known ligand.</li>
+              <li><strong>Scaffold extension</strong> — grow a scaffold into a complete candidate molecule.</li>
+              <li><strong>Scaffold hopping</strong> — generate related molecules with alternative scaffolds.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingFour">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseFour"
+                  aria-expanded="false"
+                  aria-controls="collapseFour">
+            Should I use structured input or the G4PT Assistant?
+          </button>
+        </h2>
+
+        <div id="collapseFour" class="accordion-collapse collapse"
+             aria-labelledby="headingFour"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Use <strong>structured input</strong> when you already know the generation mode and reference molecule.
+            Use the <strong>G4PT Assistant</strong> when you prefer to describe your request in natural language.
+            The two input strategies are kept separate to avoid contradictory instructions.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingFive">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseFive"
+                  aria-expanded="false"
+                  aria-controls="collapseFive">
+            What reference inputs are supported?
+          </button>
+        </h2>
+
+        <div id="collapseFive" class="accordion-collapse collapse"
+             aria-labelledby="headingFive"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Depending on the selected mode, G4PT can use:
+            <ul>
+              <li><strong>No reference</strong> for de novo generation.</li>
+              <li><strong>Ligand name</strong>, resolved into a molecular structure when possible.</li>
+              <li><strong>SMILES</strong>, validated and canonicalized with RDKit.</li>
+              <li><strong>Molecular editor input</strong>, allowing users to draw a structure directly.</li>
+            </ul>
+            Only one reference input method should be used at a time.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingSix">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseSix"
+                  aria-expanded="false"
+                  aria-controls="collapseSix">
+            What does Qwen do in G4PT?
+          </button>
+        </h2>
+
+        <div id="collapseSix" class="accordion-collapse collapse"
+             aria-labelledby="headingSix"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Qwen interprets natural language requests and converts them into structured molecular constraints.
+            It does not replace MolGPT and it does not rank molecules. Its role is to help translate user instructions
+            into parameters that the generation workflow can use.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingSeven">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseSeven"
+                  aria-expanded="false"
+                  aria-controls="collapseSeven">
+            What does MolGPT do?
+          </button>
+        </h2>
+
+        <div id="collapseSeven" class="accordion-collapse collapse"
+             aria-labelledby="headingSeven"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            MolGPT is the molecular generator used by G4PT. A single multitask MolGPT model supports de novo generation,
+            analogue generation, scaffold extension, and scaffold hopping through instruction-style mode tags.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingEight">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseEight"
+                  aria-expanded="false"
+                  aria-controls="collapseEight">
+            How are generated molecules filtered?
+          </button>
+        </h2>
+
+        <div id="collapseEight" class="accordion-collapse collapse"
+             aria-labelledby="headingEight"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            Generated molecules are validated using RDKit. Invalid structures are removed, valid molecules are canonicalized,
+            duplicates are filtered, and molecular descriptors are computed before AGAPE-based prioritization.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingNine">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseNine"
+                  aria-expanded="false"
+                  aria-controls="collapseNine">
+            What results does G4PT return?
+          </button>
+        </h2>
+
+        <div id="collapseNine" class="accordion-collapse collapse"
+             aria-labelledby="headingNine"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            G4PT returns ranked candidate molecules with information such as structure, SMILES, AGAPE score,
+            molecular properties, synthetic accessibility estimates, similarity when relevant, and generation mode.
+            Results can be exported as a CSV file.
+          </div>
+        </div>
+      </div>
+
+      <div class="accordion-item">
+        <h2 class="accordion-header" id="headingTen">
+          <button class="accordion-button collapsed" type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#collapseTen"
+                  aria-expanded="false"
+                  aria-controls="collapseTen">
+            Are generated molecules guaranteed to be active?
+          </button>
+        </h2>
+
+        <div id="collapseTen" class="accordion-collapse collapse"
+             aria-labelledby="headingTen"
+             data-bs-parent="#faqAccordion">
+          <div class="accordion-body">
+            No. G4PT provides computationally generated and prioritized candidates. The predictions are intended to support
+            early-stage molecular design and must be interpreted as hypotheses requiring further computational and experimental validation.
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+{% endblock %}
